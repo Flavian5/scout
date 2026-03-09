@@ -11,6 +11,10 @@
 - `browser` - Navigate job boards with authenticated sessions
 - `file` - Read sourcing configuration and write discovered leads
 - `web_search` - Real-time search for new job postings
+- `linkedin-scout` - Scrape LinkedIn job postings with authenticated session
+- `wellfound-scout` - Scrape Wellfound startup job listings
+- `career-page-scout` - Extract jobs from company career pages
+- `ats-scout` - Extract jobs from ATS systems (Greenhouse, Lever, Workday)
 
 ### Data Input
 - `config/sourcing.json` - Target companies, career pages, search keywords

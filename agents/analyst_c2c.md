@@ -11,6 +11,9 @@
 - `web_search` - Research company financials, contract history, project viability
 - `browser` - Deep dive into contract details, company pages
 - `file` - Read raw leads, write enriched leads, read persona
+- `signal-detector` - LLM-powered signal extraction from job descriptions
+- `company-research` - Research company background and financials
+- `asset-generator` - Generate application materials (CV, rate proposal)
 
 ### Data Input
 - `data/leads/raw_leads_c2c.json` - Output from C2C Scout agent

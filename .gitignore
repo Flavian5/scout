@@ -1,0 +1,44 @@
+# Secrets and sensitive configuration
+config/secrets.json
+.env
+.env.local
+*.env
+
+# Credentials and cookies
+data/cookies/
+~/.openclaw/credentials/
+*.cookies.json
+
+# Log files
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.pdf
+*.tex.backup
+
+# OpenClaw runtime
+.openclaw/
+*.state.json
+
+# Data files that shouldn't be committed
+data/leads/*.json
+!data/leads/.gitkeep
+applications/*/
+
+# Node modules (if any skill implementations use Node)
+node_modules/
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Temporary files
+tmp/
+temp/
+*.tmp

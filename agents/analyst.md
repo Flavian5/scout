@@ -11,6 +11,9 @@
 - `web_search` - Research company financials, culture, recent news
 - `browser` - Deep dive into company pages, team structures
 - `file` - Read raw leads, write enriched leads, read persona
+- `signal-detector` - LLM-powered signal extraction from job descriptions
+- `company-research` - Research company background and financials
+- `asset-generator` - Generate application materials (CV, cover letter)
 
 ### Data Input
 - `data/leads/raw_leads.json` - Output from Scout agent

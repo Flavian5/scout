@@ -1,0 +1,17 @@
+{
+  "name": "linkedin-c2c-scout",
+  "version": "1.0.0",
+  "description": "LinkedIn C2C/Contract job scraper - filters for freelance and contract positions with pagination support",
+  "main": "scrape.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "playwright": "^1.58.2",
+    "uuid": "^13.0.0"
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "version": "2.0.0",
+  "description": "OpenClaw configuration for Autonomous Job Search Assistant",
+  "workspace": {
+    "path": ".",
+    "name": "scout"
+  },
+  "agents": {
+    "defaults": {
+      "sandbox": {
+        "mode": "non-main"
+      },
+      "heartbeat": {
+        "every": "24h",
+        "at": "02:00"
+      }
+    },
+    "scout": {
+      "enabled": true,
+      "schedule": "0 2 * * *",
+      "input_files": [
+        "config/sourcing.json",
+        "config/criteria.json",
+        "config/persona.md"
+      ],
+      "output_files": [
+        "data/leads/raw_leads.json"
+      ]
+    },
+    "analyst": {
+      "enabled": true,
+      "schedule": "30 2 * * *",
+      "input_files": [
+        "data/leads/raw_leads.json",
+        "config/criteria.json",
+        "config/persona.md"
+      ],
+      "output_files": [
+        "data/leads/enriched_leads.json"
+      ]
+    },
+    "strategist": {
+      "enabled": true,
+      "schedule": "0 3 * * *",
+      "input_files": [
+        "data/leads/enriched_leads.json",
+        "config/persona.md",
+        "data/cv_base.md",
+        "data/cover_letter_base.md"
+      ],
+      "output_dir": "applications"
+    },
+    "scout_c2c": {
+      "enabled": true,
+      "schedule": "0 1 * * *",
+      "input_files": [
+        "config/sourcing.json",
+        "config/criteria.json",
+        "config/persona.md"
+      ],
+      "output_files": [
+        "data/leads/raw_leads_c2c.json"
+      ]
+    },
+    "analyst_c2c": {
+      "enabled": true,
+      "schedule": "30 1 * * *",
+      "input_files": [
+        "data/leads/raw_leads_c2c.json",
+        "config/criteria.json",
+        "config/persona.md"
+      ],
+      "output_files": [
+        "data/leads/enriched_leads_c2c.json"
+      ]
+    },
+    "strategist_c2c": {
+      "enabled": true,
+      "schedule": "0 2 * * *",
+      "input_files": [
+        "data/leads/enriched_leads_c2c.json",
+        "config/persona.md",
+        "data/cv_base.md",
+        "data/contract_proposal_base.md"
+      ],
+      "output_dir": "applications"
+    }
+  },
+  "skills": {
+    "entries": {
+      "linkedin-scout": {
+        "enabled": true,
+        "config": {
+          "requires_auth": true,
+          "cookies_path": "~/.openclaw/skills/linkedin-scout/cookies.json"
+        }
+      },
+      "wellfound-scout": {
+        "enabled": true,
+        "config": {
+          "requires_auth": false
+        }
+      },
+      "signal-detector": {
+        "enabled": true,
+        "config": {
+          "model": "anthropic/claude-4-sonnet",
+          "provider": "openrouter"
+        }
+      },
+      "asset-generator": {
+        "enabled": true,
+        "config": {
+          "templates_dir": "data",
+          "output_dir": "applications"
+        }
+      },
+      "company-research": {
+        "enabled": true
+      },
+      "career-page-scout": {
+        "enabled": true
+      },
+      "ats-scout": {
+        "enabled": true
+      }
+    }
+  },
+  "notifications": {
+    "enabled": true,
+    "channel": "email",
+    "method": "smtp",
+    "schedule": "8 3 * * *",
+    "template": "daily_heartbeat"
+  },
+  "logging": {
+    "level": "info",
+    "file": "logs/openclaw.log",
+    "console": true
+  },
+  "secrets": {
+    "path": "config/secrets.json",
+    "required": [
+      "linkedin.li_at",
+      "linkedin.jsessionid",
+      "llm_api.api_key"
+    ]
+  },
+  "paths": {
+    "persona": "config/persona.md",
+    "sourcing": "config/sourcing.json",
+    "criteria": "config/criteria.json",
+    "leads": "data/leads",
+    "applications": "applications",
+    "templates": "data"
+  }
+}

@@ -11,6 +11,8 @@
 - `file` - Read enriched leads, persona, generate CV/cover letter files
 - `exec` - Run asset generator (LaTeX/PDF compilation)
 - `browser` - Verify application links still work
+- `asset-generator` - Generate tailored CV, cover letters, application notes
+- `company-research` - Research company background for customization
 
 ### Data Input
 - `data/leads/enriched_leads.json` - Scored output from Analyst

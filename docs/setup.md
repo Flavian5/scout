@@ -1,95 +1,144 @@
-# **Local Setup Guide: OpenClaw Job Assistant**
+# Scout Agent Setup Guide
 
-This guide walks you through the 2026 "standard" installation for OpenClaw on your local machine, optimized for the **Autonomous Job Search Assistant** architecture.
+This document outlines what's been created and what steps are needed to get the autonomous job search agent running.
 
-## **1\. Prerequisites**
+---
 
-Before starting, ensure your environment meets the minimum requirements for agentic workflows:
+## What's Been Created
 
-* **Node.js:** v22.0.0 or newer (Required for the Gateway and CLI).  
-* **Git:** For skill management and workspace versioning.  
-* **Hardware:** 8GB+ RAM recommended (16GB+ if running local LLMs via Ollama).  
-* **Homebrew (macOS/Linux):** Recommended for dependency management.
+### Configuration Files
+| File | Purpose |
+|------|---------|
+| `.gitignore` | Excludes secrets, cookies, logs, and generated data |
+| `config/secrets.json` | **Template** - Fill in your API keys and cookies |
+| `openclaw.json` | OpenClaw runtime configuration with agent schedules |
 
-## **2\. One-Line Installation**
+### Data Files
+| File | Purpose |
+|------|---------|
+| `data/cv_base.md` | Base CV template with Jinja2-style placeholders |
+| `data/cover_letter_base.md` | Base cover letter template |
+| `data/contract_proposal_base.md` | C2C contract proposal template |
+| `data/leads/raw_leads.json` | Empty array for Scout FTE output |
+| `data/leads/enriched_leads.json` | Empty array for Analyst FTE output |
+| `data/leads/raw_leads_c2c.json` | Empty array for Scout C2C output |
+| `data/leads/enriched_leads_c2c.json` | Empty array for Analyst C2C output |
+| `applications/archive/.gitkeep` | Archive directory placeholder |
 
-Open your terminal and run the official installer. This script handles the CLI binary, basic dependencies, and environment pathing.
+---
 
-**macOS / Linux / WSL2:**
+## What's Missing (Required for Operation)
 
-curl \-fsSL \[https://openclaw.ai/install.sh\](https://openclaw.ai/install.sh) | bash
+### 1. Secrets Configuration
+Copy and fill in `config/secrets.json`:
 
-**Windows (PowerShell Admin):**
+```bash
+cp config/secrets.json config/secrets.json.bak
+# Edit config/secrets.json with your actual values
+```
 
-iwr \-useb \[https://openclaw.ai/install.ps1\](https://openclaw.ai/install.ps1) | iex
+Required secrets:
+- **LinkedIn cookies**: Get from browser DevTools → Application → Cookies → linkedin.com
+  - `li_at` cookie value
+  - `JSESSIONID` cookie value
+- **LLM API key**: Anthropic (recommended) or OpenAI
+- **Notification webhook**: Discord or Telegram bot
 
-## **3\. Interactive Onboarding**
+### 2. Skill Implementations
+The skill directories currently only have README.md files. The actual scraping/analysis logic needs to be implemented:
 
-Run the onboarding wizard to initialize your configuration and the background "Daemon" service.
+| Skill | Status | Priority |
+|-------|--------|----------|
+| `linkedin-scout/` | README only | **High** |
+| `wellfound-scout/` | README only | High |
+| `signal-detector/` | README only | High |
+| `asset-generator/` | README only | High |
+| `company-research/` | Empty | Medium |
+| `career-page-scout/` | Empty | Medium |
+| `ats-scout/` | Empty | Low |
 
-openclaw onboard \--install-daemon
+### 3. OpenClaw Installation
+Following the setup guide in `docs/setup.md`:
 
-### **Wizard Checklist:**
+```bash
+# Install OpenClaw CLI
+curl -fsSL https://openclaw.ai/install.sh | bash
 
-1. **AI Provider:** Select **Anthropic (Claude 3.5/4.5)** for complex job evaluation or **Ollama** for private, local processing.  
-2. **Gateway Port:** Default is 18789\. Keep this unless you have a conflict.  
-3. **Workspace Path:** Set this to your project folder (e.g., \~/projects/job-scout).  
-4. **Channel:** Connect **Telegram** or **Signal** so the agent can send you the "Daily Action Package."
+# Run onboarding
+openclaw onboard --install-daemon
 
-## **4\. Project Structure (TDD Alignment)**
+# Initialize project
+cd /Users/haomeng/dev/scout
+openclaw init
+```
 
-Navigate to your workspace and initialize the specific folder structure defined in your Technical Design Document.
+---
 
-mkdir \-p job-scout/{agents,skills,config,data/leads,applications}  
-cd job-scout
+## Quick Start Checklist
 
-### **Key Initialization Commands:**
+- [ ] Fill in `config/secrets.json` with actual API keys and cookies
+- [ ] Install OpenClaw CLI
+- [ ] Run `openclaw doctor` to verify setup
+- [ ] Test LinkedIn scraper with a single query
+- [ ] Configure notification webhook (Discord/Telegram)
+- [ ] Set up daily heartbeat schedule
 
-* **Add Agents:**  
-  openclaw agents add scout \--description "Job discovery agent"  
-  openclaw agents add analyst \--description "Company health & comp researcher"  
-  openclaw agents add strategist \--description "Final scoring and asset tailor"
+---
 
-* **Install Core Skills:**  
-  npx clawhub@latest install browser    \# For scraping  
-  npx clawhub@latest install tavily     \# For research  
-  npx clawhub@latest install webhook    \# For notifications
+## Daily Heartbeat Schedule
 
-## **5\. Configuration (openclaw.json)**
+Based on `openclaw.json`:
 
-Your configuration file is located at \~/.openclaw/openclaw.json. For the Job Assistant, ensure the following sections are tuned:
+| Time | Agent | Task |
+|------|-------|------|
+| 01:00 AM | Scout C2C | Find contract roles |
+| 01:30 AM | Analyst C2C | Score contract roles |
+| 02:00 AM | Scout (FTE) | Find full-time roles |
+| 02:30 AM | Analyst (FTE) | Score full-time roles |
+| 03:00 AM | Strategist | Generate application packages |
+| 08:00 AM | Notification | Send Daily Heartbeat to user |
 
-{  
-  "agents": {  
-    "defaults": {  
-      "sandbox": { "mode": "non-main" },  
-      "heartbeat": { "every": "24h", "at": "02:00" }  
-    }  
-  },  
-  "skills": {  
-    "entries": {  
-      "linkedin-scout": {  
-        "enabled": true,  
-        "cookies": { "li\_at": "YOUR\_COOKIE", "JSESSIONID": "YOUR\_ID" }  
-      }  
-    }  
-  }  
-}
+---
 
-## **6\. Verification**
+## Testing Without Full Credentials
 
-Run the diagnostic tool to ensure your local environment is ready for autonomous operation:
+You can test the pipeline with mock data:
 
-openclaw doctor
+1. Create test leads in `data/leads/raw_leads.json`:
+```json
+[
+  {
+    "job_id": "test-001",
+    "company": "Netflix",
+    "role_title": "Staff ML Engineer",
+    "location": "Los Gatos, CA",
+    "job_description_raw": "Build recommendation systems...",
+    "detected_signals": ["recsys", "two_stage_ranking"]
+  }
+]
+```
 
-If everything is green, launch your dashboard:
+2. Run Analyst manually:
+```bash
+openclaw agents run analyst --manual
+```
 
-openclaw dashboard
+3. Check enriched output in `data/leads/enriched_leads.json`
 
-You can now access the Control UI at http://127.0.0.1:18789.
+---
 
-## **Troubleshooting Common 2026 Issues**
+## Next Steps
 
-* **"Command not found":** Restart your terminal or run source \~/.zshrc (or \~/.bashrc) to refresh your PATH.  
-* **Browser Sandbox Errors:** Ensure you have the latest Chrome/Chromium installed. If using Linux, run sudo openclaw install-deps browser.  
-* **Cookie Expiry:** LinkedIn session cookies typically expire every 7–14 days. You can automate the refresh by using a dedicated Chrome profile in the OpenClaw settings.
+1. **Immediate**: Fill in `config/secrets.json`
+2. **Before running**: Implement at least one skill (linkedin-scout recommended)
+3. **Verification**: Run dry test with mock data
+4. **Automation**: Set up full OpenClaw daemon
+
+---
+
+## Files Reference
+
+- **Agent definitions**: `agents/*.md`
+- **Configuration**: `config/*.json`, `config/*.md`
+- **Skills**: `skills/*/README.md`
+- **Documentation**: `docs/*.md`

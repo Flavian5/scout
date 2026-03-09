@@ -11,6 +11,10 @@
 - `browser` - Navigate contract job boards with authenticated sessions
 - `file` - Read C2C configuration and write discovered leads
 - `web_search` - Real-time search for new contract postings
+- `linkedin-scout` - Scrape LinkedIn job postings with authenticated session
+- `wellfound-scout` - Scrape Wellfound startup job listings
+- `career-page-scout` - Extract jobs from company career pages
+- `signal-detector` - LLM-powered signal extraction from job descriptions
 
 ### Data Input
 - `config/sourcing.json` - C2C-specific configuration and platforms
@@ -84,9 +88,11 @@ Additional queries:
 
 ### Project Type Signals:
 - **Roadmapping**: Strategic planning, architecture design
-- **Agentic Projects**: Building AI agents, autonomous systems
+- **Agentic Projects**: Building AI agents, autonomous systems (common for C2C)
 - **GenRec Projects**: Generative recommendation implementation
 - **ML Platform**: Feature stores, model serving infrastructure
+- **Data Pipelines**: Common C2C work, not a differentiator
+- **Prototyping**: Rapid prototyping, POCs (very common for C2C contracts)
 
 ### Company Signals:
 - Large tech: Amazon, Meta, Google, Netflix, Uber, Airbnb

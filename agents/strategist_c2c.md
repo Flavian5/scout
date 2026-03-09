@@ -11,6 +11,9 @@
 - `file` - Read enriched leads, persona, generate contract-specific files
 - `exec` - Run asset generator (PDF compilation)
 - `browser` - Verify contract details, rate negotiations
+- `asset-generator` - Generate CV, rate proposals, SOW documents
+- `company-research` - Research company background for rate negotiation
+- `signal-detector` - LLM-powered signal extraction from contract JDs
 
 ### Data Input
 - `data/leads/enriched_leads_c2c.json` - Scored output from C2C Analyst
