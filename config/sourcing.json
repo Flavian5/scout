@@ -1,0 +1,186 @@
+{
+  "version": "1.0.0",
+  "description": "Job sourcing configuration for Frank Meng's autonomous job search",
+  "last_updated": "2026-03-07",
+  "search_keywords": {
+    "primary": [
+      "Staff Machine Learning Engineer",
+      "Principal Machine Learning Engineer",
+      "Senior Staff MLE",
+      "ML Platform Engineer",
+      "Recommendation Systems Engineer"
+    ],
+    "secondary": [
+      "Generative Recommendation",
+      "GenRec",
+      "Foundation Models",
+      "Virtual Cell",
+      "AI for Science",
+      "Drug Discovery ML",
+      "LLM Recommendation"
+    ],
+    "company_specific": [
+      "Staff ML Engineer",
+      "ML Research Engineer",
+      "Research Scientist"
+    ]
+  },
+  "target_companies": {
+    "bio_ai": [
+      {
+        "name": "Chan Zuckerberg Initiative",
+        "short_name": "CZI",
+        "career_url": "https://chanzuckerberg.com/careers/",
+        "linkedin_url": "https://www.linkedin.com/company/chan-zuckerberg-initiative",
+        "wellfound_url": "https://wellfound.com/org/chan-zuckerberg-initiative",
+        "stage": "Philanthropy",
+        "priority": 1,
+        "focus_areas": ["Virtual Cells", "Foundation Models", "scverse", "Bioinformatics"]
+      },
+      {
+        "name": "Recursion Pharmaceuticals",
+        "short_name": "Recursion",
+        "career_url": "https://recursion.com/careers/",
+        "linkedin_url": "https://www.linkedin.com/company/recursion-pharma",
+        "wellfound_url": "https://wellfound.com/org/recursion-pharmaceuticals",
+        "stage": "Public (NASDAQ: RXRX)",
+        "priority": 1,
+        "focus_areas": ["Virtual Cell", "BioHive", "Phenomics", "Drug Discovery"]
+      },
+      {
+        "name": "Insitro",
+        "short_name": "Insitro",
+        "career_url": "https://insitro.com/careers/",
+        "linkedin_url": "https://www.linkedin.com/company/insitro",
+        "wellfound_url": "https://wellfound.com/org/insitro",
+        "stage": "Series D",
+        "priority": 1,
+        "focus_areas": ["Multi-modal", "Cell Biology", "Drug Discovery", "ML Platform"]
+      },
+      {
+        "name": "Genentech",
+        "short_name": "Genentech",
+        "career_url": "https://careers.gene.com/",
+        "linkedin_url": "https://www.linkedin.com/company/genentech",
+        "wellfound_url": "https://wellfound.com/org/genentech",
+        "stage": "Public (Roche)",
+        "priority": 1,
+        "focus_areas": ["AI Agents", "Drug Discovery", "Computational Biology"]
+      },
+      {
+        "name": "Arc Institute",
+        "short_name": "Arc",
+        "career_url": "https://arcinstitute.org/careers",
+        "linkedin_url": "https://www.linkedin.com/company/arcinstitute",
+        "wellfound_url": "https://wellfound.com/org/arc-institute",
+        "stage": "Non-profit",
+        "priority": 1,
+        "focus_areas": ["Virtual Cell", "Long-context Models", "Scientific Discovery"]
+      },
+      {
+        "name": "Second Renaissance",
+        "short_name": "Second Ren",
+        "career_url": "https://www.secondrenaissance.ai/careers",
+        "linkedin_url": "https://www.linkedin.com/company/second-renaissance",
+        "wellfound_url": "https://wellfound.com/org/second-renaissance",
+        "stage": "Series A",
+        "priority": 2,
+        "focus_areas": ["Multi-modal", "Generative AI", "Bio-AI"]
+      }
+    ],
+    "genrec_advanced_recsys": [
+      {
+        "name": "TikTok",
+        "short_name": "TikTok",
+        "career_url": "https://careers.tiktok.com/",
+        "linkedin_url": "https://www.linkedin.com/company/tiktok",
+        "wellfound_url": "https://wellfound.com/org/tiktok",
+        "stage": "Public (ByteDance)",
+        "priority": 2,
+        "focus_areas": ["Recommendation", "Two-stage Ranking", "GenRec", "Transformer"]
+      },
+      {
+        "name": "Netflix",
+        "short_name": "Netflix",
+        "career_url": "https://jobs.netflix.com/",
+        "linkedin_url": "https://www.linkedin.com/company/netflix",
+        "wellfound_url": "https://wellfound.com/org/netflix",
+        "stage": "Public (NASDAQ: NFLX)",
+        "priority": 2,
+        "focus_areas": ["Personalization", "ML Platform", "Recommendation"]
+      },
+      {
+        "name": "Spotify",
+        "short_name": "Spotify",
+        "career_url": "https://lifeatspotify.com/jobs",
+        "linkedin_url": "https://www.linkedin.com/company/spotify",
+        "wellfound_url": "https://wellfound.com/org/spotify",
+        "stage": "Public (NYSE: SPOT)",
+        "priority": 2,
+        "focus_areas": ["Recommendation", "ML Platform", "Audio ML"]
+      },
+      {
+        "name": "Amazon",
+        "short_name": "Amazon",
+        "career_url": "https://www.amazon.jobs/",
+        "linkedin_url": "https://www.linkedin.com/company/amazon",
+        "wellfound_url": "https://wellfound.com/org/amazon",
+        "stage": "Public (NASDAQ: AMZN)",
+        "priority": 3,
+        "focus_areas": ["RSG", "Recommendation Systems Group", "Alexa"]
+      },
+      {
+        "name": "Meta",
+        "short_name": "Meta",
+        "career_url": "https://metacareers.com/",
+        "linkedin_url": "https://www.linkedin.com/company/meta",
+        "wellfound_url": "https://wellfound.com/org/meta",
+        "stage": "Public (NASDAQ: META)",
+        "priority": 3,
+        "focus_areas": ["Feed Ranking", "AI/ML", "Ranking Systems"]
+      },
+      {
+        "name": "Pinterest",
+        "short_name": "Pinterest",
+        "career_url": "https://careers.pinterest.com/",
+        "linkedin_url": "https://www.linkedin.com/company/pinterest",
+        "wellfound_url": "https://wellfound.com/org/pinterest",
+        "stage": "Public (NYSE: PINS)",
+        "priority": 2,
+        "focus_areas": ["Recommendation", "Visual Search", "ML Infrastructure"]
+      },
+      {
+        "name": "Snap",
+        "short_name": "Snap",
+        "career_url": "https://careers.snap.com/",
+        "linkedin_url": "https://www.linkedin.com/company/snap",
+        "wellfound_url": "https://wellfound.com/org/snap",
+        "stage": "Public (NYSE: SNAP)",
+        "priority": 3,
+        "focus_areas": ["Recommendation", "AR/ML", "Content Ranking"]
+      }
+    ]
+  },
+  "job_boards": {
+    "linkedin": {
+      "enabled": true,
+      "search_template": "https://www.linkedin.com/jobs/search/?keywords={keywords}&location=San+Francisco+Bay+Area&f_TPR=r86400",
+      "filters": [" posted today", "linkedinRecruiter"]
+    },
+    "wellfound": {
+      "enabled": true,
+      "search_template": "https://wellfound.com/jobs?query={keywords}&loc=San_Francisco"
+    },
+    "glassdoor": {
+      "enabled": false,
+      "notes": "Less relevant for senior roles"
+    }
+  },
+  "search_parameters": {
+    "recency_days": 7,
+    "location_filter": ["San Francisco", "Bay Area", "Remote", "San Jose", "Palo Alto"],
+    "experience_level": ["Senior", "Staff", "Principal", "Lead"],
+    "salary_minimum": 250000,
+    "equity_include": true
+  }
+}
