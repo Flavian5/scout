@@ -31,9 +31,9 @@ For each company in `config/sourcing.json`:
 ### Phase 2: LinkedIn Job Search
 1. Use authenticated browser session
 2. Search for keywords from `sourcing.json`:
-   - Primary: "Staff Machine Learning Engineer", "Principal ML Engineer"
-   - Secondary: "Virtual Cell", "GenRec", "Foundation Models"
-3. Filter by: San Francisco Bay Area, Remote, posted last 7 days
+   - Primary: "Senior Machine Learning Engineer", "Staff ML Engineer"
+   - Secondary: "RecSys", "GenRec", "Foundation Models", "Voice Agent", "CX Automation", "ML Infrastructure"
+3. Filter by: San Francisco Bay Area, Seattle, Remote, posted last 2 days
 4. Extract job details: title, company, location, description, salary
 
 ### Phase 3: Wellfound/AngelList
@@ -41,36 +41,83 @@ For each company in `config/sourcing.json`:
 2. Use same keyword set
 3. Extract: role details, company stage, salary/equity range, tech stack
 
+**Note:** Consider setting up Wellfound profile to increase visibility and access to more opportunities
+
 ### Phase 4: Web Search for New Postings
-1. Use `web_search` to find recent postings:
-   - "Staff MLE [company] careers 2026"
-   - "Machine learning engineer virtual cell hiring"
-2. Follow discovered links to extract details
+Use `web_search` to find recent postings with expanded queries:
+
+**RecSys-Specific Queries:**
+- "Senior ML Engineer recommendation systems hiring 2026"
+- "Staff machine learning engineer recsys 2026"
+- "ML platform engineer Netflix Spotify TikTok 2026"
+- "recommendation systems engineer San Francisco 2026"
+
+**GenRec/Foundation Models:**
+- "generative recommendation engineer 2026"
+- "foundation model machine learning engineer hiring"
+- "VAE diffusion model recommendation 2026"
+
+**Voice Agent / CX Automation:**
+- "voice agent machine learning engineer 2026"
+- "conversational AI engineer hiring 2026"
+- "CX automation ML engineer 2026"
+
+**ML Infrastructure:**
+- "ML platform engineer infrastructure 2026"
+- "feature store machine learning engineer"
+- "MLOps engineer San Francisco Seattle 2026"
+
+**Company-Specific:**
+- "Senior ML Engineer Amazon RSG hiring 2026"
+- "machine learning engineer Meta recommendation 2026"
+- "ML engineer Uber marketplace 2026"
+
+### Phase 5: Dice Search
+1. Navigate to Dice job board
+2. Search for ML/RecSys contract and full-time roles
+3. Extract: role details, company, rate/salary, location
 
 ## Signal Detection
 
 During extraction, detect these keywords from `criteria.json`:
-- **ML Architecture**: foundation models, transformer, GenRec, VAE, diffusion, two-stage ranking
-- **Domain**: virtual cell, AI for science, drug discovery, single-cell, omics, bio-AI
-- **Company Type**: CZI, Recursion, Insitro, Genentech, Arc Institute
-- **Tech Stack**: PyTorch, TensorFlow, scGPT, Geneformer, Scanpy, AnnData
+
+### ML Architecture Signals:
+- foundation_models, transformer, GenRec, VAE, diffusion, two-stage ranking
+- recsys, candidate generation, re-ranking
+
+### Domain Signals:
+- recsys, recommendation, personalization
+- virtual_cell, AI for science, drug discovery, single-cell, omics
+- voice_agent, conversational AI, CX automation
+- ml_infrastructure, feature store, MLOps, model serving
+
+### Company Types (Expanded):
+- **Traditional Tech**: TikTok, Netflix, Spotify, Amazon, Meta, Google, Uber, Airbnb
+- **Bio-AI**: CZI, Recursion, Insitro, Genentech, Arc Institute
+- **Consulting**: McKinsey, Bain, Accenture
+
+### Tech Stack Signals:
+- **Modern ML**: PyTorch, TensorFlow, Hugging Face, scikit-learn
+- **Infrastructure**: Kubernetes, Spark, Airflow, Feast, Weaviate
+- **Traditional (acceptable)**: SQL, Python, JavaScript, Flask, Django
 
 ## Output Format
 
 ```json
 {
   "job_id": "uuid",
-  "source": "linkedin|wellfound|career_page|web_search",
+  "source": "linkedin|wellfound|career_page|web_search|dice",
   "company": "Company Name",
-  "role_title": "Staff Machine Learning Engineer",
+  "role_title": "Senior Machine Learning Engineer",
   "location": "San Francisco, CA",
   "application_url": "https://...",
   "job_description_raw": "Full JD text...",
-  "detected_signals": ["virtual_cell", "foundation_models"],
+  "detected_signals": ["recsys", "two_stage_ranking", "ml_platform"],
   "salary_range": "$250k-$350k",
   "company_stage": "Series D",
   "ats_provider": "greenhouse",
-  "discovered_at": "2026-03-07T04:00:00Z",
+  "discovered_at": "2026-03-09T04:00:00Z",
+  "posted_days_ago": 1,
   "status": "new"
 }
 ```
@@ -81,6 +128,17 @@ During extraction, detect these keywords from `criteria.json`:
 2. **No Duplicates**: Dedupe by (company + role_title + url)
 3. **Capture Everything**: Store raw JD even if no signals detected (analyst will re-evaluate)
 4. **Rate Limiting**: Respect platform limits, add delays between requests
+5. **Recency Focus**: Prioritize roles posted within 2 days
+6. **Level Focus**: Prioritize "Senior ML Engineer" and "Staff ML Engineer" over "Senior Staff"
+
+## Search Parameters Summary
+
+| Parameter | Value |
+|-----------|-------|
+| Recency | < 2 days |
+| Locations | SF Bay, Seattle, Remote |
+| Levels | Senior, Staff, Lead |
+| Keywords | See sourcing.json |
 
 ## Execution Frequency
 

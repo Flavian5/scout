@@ -1,12 +1,11 @@
 {
-  "version": "1.0.0",
-  "description": "Job sourcing configuration for Frank Meng's autonomous job search",
-  "last_updated": "2026-03-07",
+  "version": "2.0.0",
+  "description": "Job sourcing configuration for Frank Meng's autonomous job search - FTE and C2C contracts",
+  "last_updated": "2026-03-09",
   "search_keywords": {
     "primary": [
+      "Senior Machine Learning Engineer",
       "Staff Machine Learning Engineer",
-      "Principal Machine Learning Engineer",
-      "Senior Staff MLE",
       "ML Platform Engineer",
       "Recommendation Systems Engineer"
     ],
@@ -17,15 +16,141 @@
       "Virtual Cell",
       "AI for Science",
       "Drug Discovery ML",
-      "LLM Recommendation"
+      "LLM Recommendation",
+      "RecSys",
+      "Voice Agent",
+      "CX Automation",
+      "ML Infrastructure"
     ],
     "company_specific": [
-      "Staff ML Engineer",
+      "Senior ML Engineer",
       "ML Research Engineer",
       "Research Scientist"
     ]
   },
   "target_companies": {
+    "traditional_tech": [
+      {
+        "name": "TikTok",
+        "short_name": "TikTok",
+        "career_url": "https://careers.tiktok.com/",
+        "linkedin_url": "https://www.linkedin.com/company/tiktok",
+        "wellfound_url": "https://wellfound.com/org/tiktok",
+        "stage": "Public (ByteDance)",
+        "priority": 1,
+        "focus_areas": ["Recommendation", "Two-stage Ranking", "GenRec", "Transformer"]
+      },
+      {
+        "name": "Netflix",
+        "short_name": "Netflix",
+        "career_url": "https://jobs.netflix.com/",
+        "linkedin_url": "https://www.linkedin.com/company/netflix",
+        "wellfound_url": "https://wellfound.com/org/netflix",
+        "stage": "Public (NASDAQ: NFLX)",
+        "priority": 1,
+        "focus_areas": ["Personalization", "ML Platform", "Recommendation"]
+      },
+      {
+        "name": "Spotify",
+        "short_name": "Spotify",
+        "career_url": "https://lifeatspotify.com/jobs",
+        "linkedin_url": "https://www.linkedin.com/company/spotify",
+        "wellfound_url": "https://wellfound.com/org/spotify",
+        "stage": "Public (NYSE: SPOT)",
+        "priority": 1,
+        "focus_areas": ["Recommendation", "ML Platform", "Audio ML"]
+      },
+      {
+        "name": "Amazon",
+        "short_name": "Amazon",
+        "career_url": "https://www.amazon.jobs/",
+        "linkedin_url": "https://www.linkedin.com/company/amazon",
+        "wellfound_url": "https://wellfound.com/org/amazon",
+        "stage": "Public (NASDAQ: AMZN)",
+        "priority": 2,
+        "focus_areas": ["RSG", "Recommendation Systems Group", "Alexa", "AWS ML"]
+      },
+      {
+        "name": "Meta",
+        "short_name": "Meta",
+        "career_url": "https://metacareers.com/",
+        "linkedin_url": "https://www.linkedin.com/company/meta",
+        "wellfound_url": "https://wellfound.com/org/meta",
+        "stage": "Public (NASDAQ: META)",
+        "priority": 2,
+        "focus_areas": ["Feed Ranking", "AI/ML", "Ranking Systems", "RecSys"]
+      },
+      {
+        "name": "Google",
+        "short_name": "Google",
+        "career_url": "https://careers.google.com/",
+        "linkedin_url": "https://www.linkedin.com/company/google",
+        "wellfound_url": "https://wellfound.com/org/google",
+        "stage": "Public (NASDAQ: GOOGL)",
+        "priority": 2,
+        "focus_areas": ["Recommendation", "Research", "ML Platform", "Deep Learning"]
+      },
+      {
+        "name": "Uber",
+        "short_name": "Uber",
+        "career_url": "https://www.uber.com/careers/",
+        "linkedin_url": "https://www.linkedin.com/company/uber",
+        "wellfound_url": "https://wellfound.com/org/uber",
+        "stage": "Public (NYSE: UBER)",
+        "priority": 2,
+        "focus_areas": ["Marketplace ML", "Recommendation", "Pricing", "Routing"]
+      },
+      {
+        "name": "Airbnb",
+        "short_name": "Airbnb",
+        "career_url": "https://careers.airbnb.com/",
+        "linkedin_url": "https://www.linkedin.com/company/airbnb",
+        "wellfound_url": "https://wellfound.com/org/airbnb",
+        "stage": "Public (NASDAQ: ABNB)",
+        "priority": 2,
+        "focus_areas": ["Search & Recommendations", "ML Platform", "Personalization"]
+      },
+      {
+        "name": "Pinterest",
+        "short_name": "Pinterest",
+        "career_url": "https://careers.pinterest.com/",
+        "linkedin_url": "https://www.linkedin.com/company/pinterest",
+        "wellfound_url": "https://wellfound.com/org/pinterest",
+        "stage": "Public (NYSE: PINS)",
+        "priority": 2,
+        "focus_areas": ["Recommendation", "Visual Search", "ML Infrastructure"]
+      },
+      {
+        "name": "Snap",
+        "short_name": "Snap",
+        "career_url": "https://careers.snap.com/",
+        "linkedin_url": "https://www.linkedin.com/company/snap",
+        "wellfound_url": "https://wellfound.com/org/snap",
+        "stage": "Public (NYSE: SNAP)",
+        "priority": 3,
+        "focus_areas": ["Recommendation", "AR/ML", "Content Ranking"]
+      },
+      {
+        "name": "DoorDash",
+        "short_name": "DoorDash",
+        "career_url": "https://careers.doordash.com/",
+        "linkedin_url": "https://www.linkedin.com/company/doordash",
+        "wellfound_url": "https://wellfound.com/org/doordash",
+        "stage": "Public (NYSE: DASH)",
+        "priority": 2,
+        "focus_areas": ["Recommendation", "Logistics ML", "Marketplace"]
+      },
+      {
+        "name": "Lyft",
+        "short_name": "Lyft",
+        "career_url": "https://www.lyft.com/careers/",
+        "linkedin_url": "https://www.linkedin.com/company/lyft",
+        "wellfound_url": "https://wellfound.com/org/lyft",
+        "stage": "Public (NASDAQ: LYFT)",
+        "priority": 3,
+        "focus_areas": ["ML", "Pricing", "Routing", "Recommendation"]
+      }
+    ],
     "bio_ai": [
       {
         "name": "Chan Zuckerberg Initiative",
@@ -88,76 +213,36 @@
         "focus_areas": ["Multi-modal", "Generative AI", "Bio-AI"]
       }
     ],
-    "genrec_advanced_recsys": [
+    "consulting": [
       {
-        "name": "TikTok",
-        "short_name": "TikTok",
-        "career_url": "https://careers.tiktok.com/",
-        "linkedin_url": "https://www.linkedin.com/company/tiktok",
-        "wellfound_url": "https://wellfound.com/org/tiktok",
-        "stage": "Public (ByteDance)",
+        "name": "McKinsey & Company",
+        "short_name": "McKinsey",
+        "career_url": "https://www.mckinsey.com/careers",
+        "linkedin_url": "https://www.linkedin.com/company/mckinsey",
+        "wellfound_url": "https://wellfound.com/org/mckinsey",
+        "stage": "Private",
         "priority": 2,
-        "focus_areas": ["Recommendation", "Two-stage Ranking", "GenRec", "Transformer"]
+        "focus_areas": ["QuantumBlack", "ML Consulting", "AI Strategy"]
       },
       {
-        "name": "Netflix",
-        "short_name": "Netflix",
-        "career_url": "https://jobs.netflix.com/",
-        "linkedin_url": "https://www.linkedin.com/company/netflix",
-        "wellfound_url": "https://wellfound.com/org/netflix",
-        "stage": "Public (NASDAQ: NFLX)",
+        "name": "Bain & Company",
+        "short_name": "Bain",
+        "career_url": "https://www.bain.com/careers/",
+        "linkedin_url": "https://www.linkedin.com/company/bain-company",
+        "wellfound_url": "https://wellfound.com/org/bain",
+        "stage": "Private",
         "priority": 2,
-        "focus_areas": ["Personalization", "ML Platform", "Recommendation"]
+        "focus_areas": ["Bain Advanced Analytics", "ML Consulting"]
       },
       {
-        "name": "Spotify",
-        "short_name": "Spotify",
-        "career_url": "https://lifeatspotify.com/jobs",
-        "linkedin_url": "https://www.linkedin.com/company/spotify",
-        "wellfound_url": "https://wellfound.com/org/spotify",
-        "stage": "Public (NYSE: SPOT)",
-        "priority": 2,
-        "focus_areas": ["Recommendation", "ML Platform", "Audio ML"]
-      },
-      {
-        "name": "Amazon",
-        "short_name": "Amazon",
-        "career_url": "https://www.amazon.jobs/",
-        "linkedin_url": "https://www.linkedin.com/company/amazon",
-        "wellfound_url": "https://wellfound.com/org/amazon",
-        "stage": "Public (NASDAQ: AMZN)",
+        "name": "Accenture",
+        "short_name": "Accenture",
+        "career_url": "https://www.accenture.com/careers",
+        "linkedin_url": "https://www.linkedin.com/company/accenture",
+        "wellfound_url": "https://wellfound.com/org/accenture",
+        "stage": "Public",
         "priority": 3,
-        "focus_areas": ["RSG", "Recommendation Systems Group", "Alexa"]
-      },
-      {
-        "name": "Meta",
-        "short_name": "Meta",
-        "career_url": "https://metacareers.com/",
-        "linkedin_url": "https://www.linkedin.com/company/meta",
-        "wellfound_url": "https://wellfound.com/org/meta",
-        "stage": "Public (NASDAQ: META)",
-        "priority": 3,
-        "focus_areas": ["Feed Ranking", "AI/ML", "Ranking Systems"]
-      },
-      {
-        "name": "Pinterest",
-        "short_name": "Pinterest",
-        "career_url": "https://careers.pinterest.com/",
-        "linkedin_url": "https://www.linkedin.com/company/pinterest",
-        "wellfound_url": "https://wellfound.com/org/pinterest",
-        "stage": "Public (NYSE: PINS)",
-        "priority": 2,
-        "focus_areas": ["Recommendation", "Visual Search", "ML Infrastructure"]
-      },
-      {
-        "name": "Snap",
-        "short_name": "Snap",
-        "career_url": "https://careers.snap.com/",
-        "linkedin_url": "https://www.linkedin.com/company/snap",
-        "wellfound_url": "https://wellfound.com/org/snap",
-        "stage": "Public (NYSE: SNAP)",
-        "priority": 3,
-        "focus_areas": ["Recommendation", "AR/ML", "Content Ranking"]
+        "focus_areas": ["AI & Analytics", "ML Engineering", "ML Platform"]
       }
     ]
   },
@@ -178,9 +263,74 @@
   },
   "search_parameters": {
     "recency_days": 7,
-    "location_filter": ["San Francisco", "Bay Area", "Remote", "San Jose", "Palo Alto"],
-    "experience_level": ["Senior", "Staff", "Principal", "Lead"],
+    "location_filter": ["San Francisco", "Bay Area", "Seattle", "Remote", "San Jose", "Palo Alto"],
+    "experience_level": ["Senior", "Staff", "Lead"],
     "salary_minimum": 250000,
     "equity_include": true
+  },
+  "c2c_config": {
+    "description": "Configuration for C2C contract job search",
+    "enabled": true,
+    "platforms": {
+      "dice": {
+        "enabled": true,
+        "search_template": "https://www.dice.com/jobs?q={keywords}&l=San+Francisco%2C+CA",
+        "filters": ["contract", "c2c", "corp-to-corp", "1099"]
+      },
+      "linkedin": {
+        "enabled": true,
+        "search_template": "https://www.linkedin.com/jobs/search/?keywords={keywords}&contractType=corp&location=United+States",
+        "filters": ["contract", "corp-to-corp"]
+      },
+      "wellfound": {
+        "enabled": true,
+        "search_template": "https://wellfound.com/remote/contract-jobs?query={keywords}"
+      },
+      "toptal": {
+        "enabled": true,
+        "notes": "Premium freelance network - requires application"
+      },
+      "gunio": {
+        "enabled": true,
+        "notes": "Elite freelance developer network"
+      },
+      "upwork": {
+        "enabled": false,
+        "notes": "Lower rates, less relevant for Staff-level"
+      }
+    },
+    "rate_requirements": {
+      "minimum_hourly": 100,
+      "preferred_hourly": 120,
+      "preferred_hourly_max": 150,
+      "project_based_min": 10000
+    },
+    "keywords": [
+      "Machine Learning Engineer Contract",
+      "ML Platform Engineer Contract",
+      "Recommendation Systems Consultant",
+      "ML Infrastructure Contractor",
+      "Senior ML Engineer Independent",
+      "ML Architect Contract"
+    ],
+    "target_companies": [
+      "Amazon",
+      "Meta",
+      "Google",
+      "Netflix",
+      "Uber",
+      "Airbnb",
+      "Spotify",
+      "TikTok",
+      "Microsoft",
+      "Apple"
+    ],
+    "engagement_types": [
+      "6-month contract",
+      "12-month contract",
+      "6+ months",
+      "long-term contract",
+      "project-based"
+    ]
   }
 }

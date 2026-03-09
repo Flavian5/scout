@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0",
-  "description": "Scoring criteria for job role evaluation - de-emphasizes immediate comp, prioritizes impact and value",
+  "version": "2.0.0",
+  "description": "Scoring criteria for job role evaluation - balances comp, career impact, and technical alignment",
   "scoring_model": {
     "description": "Weighted scoring model for evaluating job opportunities against persona preferences",
     "max_score": 100,
@@ -8,15 +8,39 @@
     "high_priority_threshold": 85
   },
   "categories": {
+    "compensation": {
+      "weight": 40,
+      "description": "Compensation package - base salary, equity, bonuses",
+      "signals": [
+        {
+          "name": "competitive_salary",
+          "keywords": ["$250k", "$300k", "$350k", "250k", "300k", "350k", "competitive compensation"],
+          "points": 20,
+          "notes": "Strong base salary for Staff/Senior level"
+        },
+        {
+          "name": "equity_include",
+          "keywords": ["equity", "stock", "RSU", "options", "ownership"],
+          "points": 15,
+          "notes": "Equity component included"
+        },
+        {
+          "name": "signing_bonus",
+          "keywords": ["signing bonus", "relocation", "bonus"],
+          "points": 10,
+          "notes": "Additional compensation elements"
+        }
+      ]
+    },
     "ml_architecture_depth": {
-      "weight": 25,
-      "description": "Technical depth of ML systems - focus on sophisticated architectures over simple A/B testing",
+      "weight": 20,
+      "description": "Technical depth of ML systems - focus on sophisticated architectures",
       "signals": [
         {
           "name": "foundation_models",
           "keywords": ["scGPT", "Geneformer", "scPRINT", "foundation model", "pretraining", "large language model", "LLM"],
           "points": 25,
-          "notes": "Highest priority - foundation model experience"
+          "notes": "Foundation model experience"
         },
         {
           "name": "transformer_architectures",
@@ -46,43 +70,49 @@
           "name": "production_ml",
           "keywords": ["feature store", "model serving", "ML pipeline", "MLOps", "A/B testing", "online learning"],
           "points": 15,
-          "notes": "Standard production ML - less weight than architecture"
+          "notes": "Standard production ML"
         }
       ]
     },
     "domain_alignment": {
-      "weight": 25,
+      "weight": 20,
       "description": "How well the domain aligns with career transition goals",
       "signals": [
         {
+          "name": "recsys",
+          "keywords": ["recommendation", "personalization", "feed", "discovery", "content ranking", "recsys", "recommender"],
+          "points": 25,
+          "notes": "Direct RecSys alignment - high priority"
+        },
+        {
           "name": "virtual_cell",
           "keywords": ["virtual cell", "AI for science", "biological", "single-cell", "omics", "drug discovery", "biotech"],
-          "points": 25,
+          "points": 23,
           "notes": "Direct alignment with virtual cell transition"
         },
         {
           "name": "bio_ai",
           "keywords": ["bio-AI", "computational biology", "genomics", "proteomics", "transcriptomics", "phenomics"],
-          "points": 23,
+          "points": 21,
           "notes": "Bio-AI domain experience"
+        },
+        {
+          "name": "voice_agent_automation",
+          "keywords": ["voice agent", "voice AI", "conversational AI", "voice assistant", "CX automation", "customer experience"],
+          "points": 20,
+          "notes": "Voice agent / CX automation"
         },
         {
           "name": "healthcare_ai",
           "keywords": ["healthcare ML", "medical AI", "clinical ML", "patient data", "EHR", "clinical trials"],
           "points": 18,
           "notes": "Healthcare domain - relevant background"
-        },
-        {
-          "name": "consumer_recsys",
-          "keywords": ["recommendation", "personalization", "feed", "discovery", "content ranking"],
-          "points": 15,
-          "notes": "Traditional consumer RecSys - acceptable but lower priority"
         }
       ]
     },
     "career_impact": {
-      "weight": 20,
-      "description": "Long-term career value - learning, network, mission (emphasized over immediate TC)",
+      "weight": 15,
+      "description": "Long-term career value - learning, network, mission",
       "signals": [
         {
           "name": "scientific_impact",
@@ -91,14 +121,20 @@
           "notes": "Direct contribution to science/health"
         },
         {
+          "name": "hyperscale_distributed_compute",
+          "keywords": ["hyperscale", "distributed", "petabyte", "large scale", "distributed training", "large scale systems"],
+          "points": 20,
+          "notes": "Hyperscale / distributed compute experience"
+        },
+        {
           "name": "publication_opportunity",
           "keywords": ["publish", "academic", "conference", "open source", "research", "paper"],
-          "points": 18,
+          "points": 15,
           "notes": "Ability to publish work"
         },
         {
           "name": "leadership_growth",
-          "keywords": ["staff", "principal", "senior", "lead", "mentor", "team building", "architecture"],
+          "keywords": ["staff", "senior", "lead", "mentor", "team building", "architecture"],
           "points": 15,
           "notes": "Staff+ level scope"
         },
@@ -111,7 +147,7 @@
       ]
     },
     "infrastructure_resources": {
-      "weight": 15,
+      "weight": 5,
       "description": "Technical infrastructure and compute resources available",
       "signals": [
         {
@@ -135,7 +171,7 @@
       ]
     },
     "company_culture": {
-      "weight": 10,
+      "weight": 5,
       "description": "Company characteristics and work environment",
       "signals": [
         {
@@ -160,13 +196,19 @@
     },
     "location_requirements": {
       "weight": 5,
-      "description": "Location and visa considerations (lower weight than other factors)",
+      "description": "Location and visa considerations",
       "signals": [
         {
           "name": "bay_area",
           "keywords": ["San Francisco", "Palo Alto", "Menlo Park", "Mountain View", "Sunnyvale", "San Jose"],
           "points": 5,
           "notes": "SF Bay Area location"
+        },
+        {
+          "name": "seattle",
+          "keywords": ["Seattle", "Redmond", "Bellevue", "Kirkland"],
+          "points": 5,
+          "notes": "Seattle area location"
         },
         {
           "name": "remote_us",
@@ -183,16 +225,15 @@
       ]
     }
   },
-  "weight_adjustments": {
-    "description": "Manual adjustments to scoring based on strategic priorities",
-    "decrease_immediate_comp_weight": true,
-    "comp_weight_reduced_from": 20,
-    "comp_weight_reduced_to": 5,
-    "reason": "De-emphasize immediate compensation to focus on career value and impact"
-  },
   "bonus_signals": {
     "description": "Additional points for exceptional alignment",
     "bonuses": [
+      {
+        "name": "recsys_expertise",
+        "keywords": ["recommendation system", "recommender", "personalization", "recsys", "two-stage", "candidate generation"],
+        "bonus_points": 12,
+        "notes": "RecSys expertise - high value"
+      },
       {
         "name": "scverse_experience",
         "keywords": ["Scanpy", "AnnData", "scvi-tools", "scverse", "single-cell"],

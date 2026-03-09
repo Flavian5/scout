@@ -23,20 +23,76 @@
 ## Enrichment Workflow
 
 ### Phase 1: Company Research
-For each raw lead:
-1. Use `web_search` to find:
-   - Company funding stage, recent rounds, valuation
-   - Recent news/press releases
-   - Glassdoor/levels.fyi compensation data
-   - Leadership team background
 
-2. Example queries:
-   - "[Company] funding 2025 2026"
-   - "[Company] machine learning team size"
-   - "[Company] salary range Staff MLE"
-   - "[Company] culture values"
+For each raw lead, conduct comprehensive company research:
 
-### Phase 2: Role Deep Dive
+#### For Public Companies:
+1. **SEC Filings & Financials**: Search for 10-K, 10-Q filings
+   - Query: "[Company] 10-K 2025" or "[Company] annual report 2025"
+   - Extract: Revenue, employee count, R&D spend
+
+2. **Revenue Per Employee Calculation**:
+   - Revenue / Employee count = Revenue per employee
+   - Benchmark: >$300K = strong, >$500K = excellent
+   - This indicates company efficiency and ML investment capacity
+
+3. **Stock Performance & Growth**:
+   - Query: "[Company] stock performance 2025 2026"
+   - Extract: YoY growth, key milestones
+
+#### For Private Companies:
+1. **Funding & Valuation**: Search for recent rounds
+   - Query: "[Company] Series X funding 2025" or "[Company] raised"
+   - Extract: Valuation, investors, runway
+
+2. **Growth Indicators**:
+   - Query: "[Company] growth 2025" or "[Company] expansion"
+   - Extract: Headcount growth, market expansion
+
+3. **Alternative Data Portals**:
+   - PitchBook, Crunchbase, LinkedIn Company Insights
+   - Employee count trends, leadership changes
+
+#### Key Metrics to Extract:
+| Metric | Target Data | Purpose |
+|--------|-------------|---------|
+| Main Product/Income Stream | Core business model | Understand stability |
+| Revenue/Employee (Public) | Range: $200K-$1M+ | Tier classification |
+| Growth Trajectory | YoY % or qualitative | Company health |
+| Funding Stage (Private) | Series A-F or IPO | Maturity indicator |
+
+#### Tier Classification:
+- **Tier 1 (Excellent)**: $500K+ revenue/employee, strong growth
+- **Tier 2 (Good)**: $300-500K revenue/employee, stable
+- **Tier 3 (Average)**: $200-300K revenue/employee
+- **Tier 4 (Below Average)**: <$200K revenue/employee
+
+### Phase 2: Manager Profile Analysis
+
+This is a critical missing piece - evaluate the hiring manager:
+
+1. **Tenure & Stability**:
+   - Query: "[Company] [Manager Title] LinkedIn" or "[Team] engineering manager"
+   - Questions: How long at company? Previous roles?
+   - **Red Flag**: Manager who changed jobs every 1-2 years
+   - **Green Flag**: 3+ years tenure suggests stability
+
+2. **Experience Diversity**:
+   - Query: "[Manager] background" or "[Manager] previously"
+   - Questions: Same startup since graduation? Multiple industries?
+   - **Green Flag**: Diverse background = broader perspective
+   - **Red Flag**: Only one company/field may indicate limited vision
+
+3. **Technical Competence**:
+   - Look for: Previous ML/engineering roles, technical publications
+   - Query: "[Manager] machine learning" or "[Manager] technical"
+   - Questions: Do they understand ML architecture? Published work?
+
+4. **Team Size & Structure**:
+   - Query: "[Company] ML team size" or "[Company] data science team"
+   - Smaller teams = more individual impact, larger = more mentorship
+
+### Phase 3: Role Deep Dive
 1. Read full job description in detail
 2. Identify specific:
    - Tech stack requirements
@@ -44,34 +100,36 @@ For each raw lead:
    - Key responsibilities and projects
    - Required vs preferred qualifications
 
-### Phase 3: Signal Classification
+### Phase 4: Signal Classification
 Use `criteria.json` to classify each lead:
 
-#### ML Architecture Depth (25%)
+#### Compensation (40%)
+- competitive_salary: $250k+ base
+- equity_include: Stock options/RSUs
+- signing_bonus: Relocation or signing
+
+#### ML Architecture Depth (20%)
 - foundation_models: scGPT, Geneformer, LLM pretraining
 - transformer_architectures: Self-attention, BERT
 - generative_recommendation: VAE, diffusion models
 - two_stage_ranking: Candidate generation + re-ranking
 - causal_ml: Causal inference, uplift modeling
 
-#### Domain Alignment (25%)
+#### Domain Alignment (20%)
+- recsys: Recommendation systems
 - virtual_cell: AI for science, drug discovery
 - bio_ai: Computational biology, genomics
-- healthcare_ai: Medical ML, clinical
-- consumer_recsys: Recommendation systems
+- voice_agent_automation: CX automation, voice agents
 
-#### Career Impact (20%)
+#### Career Impact (15%)
 - scientific_impact: Drug discovery, research
+- hyperscale_distributed_compute: Large-scale systems
 - publication_opportunity: Academic, open source
 - leadership_growth: Staff+ scope
 
-#### Infrastructure Resources (15%)
+#### Infrastructure Resources (5%)
 - gpu_compute: Access to modern GPUs
 - data_scale: Petabyte-scale operations
-
-#### Company Culture (10%)
-- mission_driven: Non-profit, foundation
-- remote_friendly: Flexible arrangements
 
 ## Scoring Algorithm
 
@@ -86,6 +144,7 @@ category_score = sum(matched_signal_points) / max_possible_points * category_wei
 
 ### Step 3: Bonus Points
 Apply bonuses for exceptional alignment:
+- recsys_expertise: +12 points
 - scverse_experience: +10 points
 - agentic_ai: +8 points
 - mle_platform_building: +5 points
@@ -107,7 +166,7 @@ Remove roles matching hard_no criteria:
 {
   "job_id": "uuid",
   "company": "Company Name",
-  "role_title": "Staff Machine Learning Engineer",
+  "role_title": "Senior Machine Learning Engineer",
   "location": "San Francisco, CA",
   "application_url": "https://...",
   "source": "linkedin",
@@ -116,38 +175,45 @@ Remove roles matching hard_no criteria:
     "company_stage": "Series D",
     "estimated_comp": "$280k-$350k",
     "company_size": "200-500",
+    "revenue_per_employee": "$450k",
+    "company_tier": "Tier 1",
+    "growth_trajectory": "Strong - 40% YoY",
     "recent_news": "Raised $300M Series D in 2025",
-    "leadership_background": "Ex-Google, ex-Meta",
+    "manager_profile": {
+      "name": "[Manager Name]",
+      "tenure_at_company": "4 years",
+      "experience_diversity": "High - 2 previous companies",
+      "technical_background": "Strong - ex-Google ML",
+      "team_size": "8 engineers"
+    },
     "tech_stack": ["PyTorch", "Kubernetes", "Airflow"]
   },
 
   "scoring": {
-    "ml_architecture_depth": 22,
-    "domain_alignment": 25,
-    "career_impact": 18,
-    "infrastructure_resources": 12,
-    "company_culture": 8,
-    "bonus_points": 10,
-    "total_score": 95
+    "compensation": 35,
+    "ml_architecture_depth": 18,
+    "domain_alignment": 17,
+    "career_impact": 12,
+    "infrastructure_resources": 4,
+    "bonus_points": 12,
+    "total_score": 98
   },
 
   "priority_level": "high",
   "meets_threshold": true,
   "key_strengths": [
-    "Virtual cell focus directly aligns with career transition",
-    "scGPT/Geneformer foundation model work",
-    "CZI mission-driven science impact"
+    "RecSys focus directly aligns with core expertise",
+    "Strong compensation package",
+    "Manager with diverse technical background"
   ],
-  "potential_concerns": [
-    "Non-profit compensation may be lower than industry"
-  ],
+  "potential_concerns": [],
   "recommended_actions": [
     "Apply immediately - high priority",
     "Emphasize Twitter-scale ranking experience",
-    "Prepare for virtual cell domain questions"
+    "Prepare for RecSys deep-dive questions"
   ],
 
-  "analyzed_at": "2026-03-07T04:30:00Z",
+  "analyzed_at": "2026-03-09T04:30:00Z",
   "status": "ready_for_review"
 }
 ```
@@ -157,6 +223,7 @@ Remove roles matching hard_no criteria:
 1. **Process All**: Score ALL raw leads, even low-signal ones (context may reveal hidden value)
 2. **Transparent Scoring**: Store all category scores, not just total
 3. **Context Matters**: Allow override when JD lacks keywords but role context suggests alignment
+4. **Manager Research Required**: Always attempt to find hiring manager info
 
 ## Execution Frequency
 
