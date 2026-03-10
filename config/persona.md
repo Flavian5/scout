@@ -2,7 +2,7 @@
 
 ## Professional Summary
 
-Technical Advisor and Consultant on contract with SharedServices Canada, with deep expertise in building production ML systems, recommendation platforms, and MLOps infrastructure at hyperscale. TN-eligible for US roles.
+**ML Platform Consultant for AI-first companies** with 10+ years of experience building production ML systems at Twitter-scale (1PB/hour data pipelines). Expert in recommendation platforms, MLOps infrastructure, and project-based delivery. TN-eligible for US roles.
 
 ## Core Skills
 
@@ -59,23 +59,60 @@ Technical Advisor and Consultant on contract with SharedServices Canada, with de
 
 For US-based contracts as Canadian consultant:
 
-### Target Platforms
-- Dice, LinkedIn, Wellfound, Toptal, Gun.io, Upwork
+### Target Platforms (Priority Order)
+1. **Braintrust** - Worker-owned, high rates, C2C-friendly (vetting takes ~2 weeks)
+2. **A-Team** - Elite talent network, C2C available
+3. **Wellfound** - Startup contracts
+4. **LinkedIn** - Good for contract/C2C filter
+5. **Toptal/Gun.io** - Premium (requires membership)
+6. **Dice** - Fallback only (lower rates)
 
-### Role Types
-- Contract ML Engineer (6-12 month projects)
-- Consulting MLE (project-based)
-- Independent Contractor roles
+### Boutique AI Agencies (Direct Applications)
+- **Vector Institute** - Partners program
+- **A-List** - AI/ML staffing specialists
+- **Aylien** - NLP/AI specialists
 
-### Rate Requirements
-- **Minimum**: $100/hour USD
-- **Preferred**: $120-150/hour USD
-- **Project-based**: Market rate for Staff-level scope
+### Canadian Staffing (Enterprise/Government)
+- **Procom** - Government/enterprise focus
+- **S.i. Systems** - Tech specialists
+- **Eagle Professional Resources** - IT and engineering
+
+### Engagement Type Preference
+**Project-based SOW preferred over hourly contracting**
+
+- **Project-Based** (Preferred): Fixed-scope, deliverable-defined engagements
+  - ML Platform Assessment: $25K-35K
+  - RecSys Implementation: $60K-90K
+  - GenRec Prototype: $75K-100K
+  - Full ML Platform Build: $150K-250K
+  
+- **Hourly** (Secondary): For smaller scope or undefined work
+  - Minimum: $125/hour USD
+  - Preferred: $150-250/hour USD (Braintrust/A-Team range)
+
+### Role Types to Filter FOR:
+- "SOW" / "Statement of Work"
+- "Fixed-price" / "Fixed fee"
+- "Deliverable-based"
+- "Project-based"
+- "Consulting" (not "staffing")
+- "Implementation" (not "augmentation")
+- "Corp-to-Corp" / "C2C"
+
+### Role Types to Filter OUT:
+- "Staff augmentation"
+- "Time and materials" (unless rate is high)
+- "W2" / "Employee" (not contractor)
+- "1085" / "1099" staffing
+- "Through agency" / "Via staffing"
 
 ### Target Companies for C2C
 - Large tech with RecSys needs (Amazon, Meta, Google, Netflix, Uber, Airbnb)
 - Consulting firms with ML practices
 - Companies needing ML platform modernization
+- AI-first startups (CZI, Recursion, Insitro)
+- Y Combinator startups (via workatastartup.com)
+- Direct CTO outreach (20 companies/week)
 
 ## Target Companies
 
@@ -104,7 +141,7 @@ For US-based contracts as Canadian consultant:
 - **Visa**: TN visa eligible (Canadian citizen)
 
 ### C2C Contracts
-- **Rate**: $100+/hour USD minimum
+- **Rate**: $125+/hour USD minimum
 - **Location**: Remote US or client site (travel covered)
 - **Engagement**: 6+ months preferred
 
@@ -134,5 +171,15 @@ For US-based contracts as Canadian consultant:
 - **Languages**: Python, Ruby, Ruby on Rails, SQL
 - **ML Frameworks**: PyTorch, TensorFlow
 - **ML Models**: Logistic Regression, Gradient Boosted Trees, Transformer Models, RQVAE, Custom Neural Networks
-- **Infrastructure**: Kubernetes, Spark, Airflow, Feast, PostgreSQL (vectors)
+- **Infrastructure**: Kubernetes, Spark, Airflow, Feast, Weaviate, PostgreSQL (vectors)
 - **Tools**: Git, CI/CD, monitoring/observability stacks
+
+## Key Differentiators
+
+| Differentiator | Value |
+|----------------|-------|
+| Scale Experience | Twitter-scale (1PB/hour pipelines) |
+| Years of Experience | 10+ years |
+| Delivery Model | Project-based SOW preferred |
+| Rate Range | $125-250/hour USD |
+| Specialization | ML Platform Consultant for AI-first companies |

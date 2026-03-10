@@ -275,29 +275,124 @@
       "dice": {
         "enabled": true,
         "search_template": "https://www.dice.com/jobs?q={keywords}&l=San+Francisco%2C+CA",
-        "filters": ["contract", "c2c", "corp-to-corp", "1099"]
+        "filters": ["contract", "c2c", "corp-to-corp", "1099"],
+        "priority": 5,
+        "notes": "Fallback only - lower rates"
       },
       "linkedin": {
         "enabled": true,
         "search_template": "https://www.linkedin.com/jobs/search/?keywords={keywords}&contractType=corp&location=United+States",
-        "filters": ["contract", "corp-to-corp"]
+        "filters": ["contract", "corp-to-corp"],
+        "priority": 3
       },
       "wellfound": {
         "enabled": true,
-        "search_template": "https://wellfound.com/remote/contract-jobs?query={keywords}"
+        "search_template": "https://wellfound.com/remote/contract-jobs?query={keywords}",
+        "priority": 2
       },
       "toptal": {
         "enabled": true,
-        "notes": "Premium freelance network - requires application"
+        "notes": "Premium freelance network - requires application",
+        "priority": 4
       },
       "gunio": {
         "enabled": true,
-        "notes": "Elite freelance developer network"
+        "notes": "Elite freelance developer network",
+        "priority": 4
+      },
+      "braintrust": {
+        "enabled": true,
+        "notes": "Worker-owned network, high rates, C2C-friendly - vetting takes ~2 weeks",
+        "priority": 1,
+        "application_url": "https://braintrust.com/apply",
+        "requires_application": true
+      },
+      "ateam": {
+        "enabled": true,
+        "notes": "Elite talent network, C2C available",
+        "priority": 1,
+        "application_url": "https://ateam.io/join",
+        "requires_application": true
       },
       "upwork": {
         "enabled": false,
         "notes": "Lower rates, less relevant for Staff-level"
       }
+    },
+    "boutique_ai_agencies": {
+      "description": "Boutique AI/ML agencies with specialized talent",
+      "enabled": true,
+      "agencies": [
+        {
+          "name": "Vector Institute",
+          "short_name": "Vector",
+          "notes": "Partners program - AI specialists",
+          "priority": 2,
+          "focus": "AI/ML talent pipeline"
+        },
+        {
+          "name": "A-List",
+          "short_name": "A-List",
+          "notes": "AI/ML staffing specialists",
+          "priority": 2,
+          "focus": "Machine learning, data science"
+        },
+        {
+          "name": "Aylien",
+          "short_name": "Aylien",
+          "notes": "NLP/AI specialists",
+          "priority": 2,
+          "focus": "NLP, AI engineering"
+        }
+      ]
+    },
+    "canadian_staffing": {
+      "description": "Canadian staffing firms for government/enterprise contracts",
+      "enabled": true,
+      "agencies": [
+        {
+          "name": "Procom",
+          "short_name": "Procom",
+          "notes": "Government/enterprise focus",
+          "priority": 3,
+          "focus": "Enterprise IT, government contracts"
+        },
+        {
+          "name": "S.i. Systems",
+          "short_name": "S.i. Systems",
+          "notes": "Tech specialists",
+          "priority": 3,
+          "focus": "Technology professionals"
+        },
+        {
+          "name": "Eagle Professional Resources",
+          "short_name": "Eagle",
+          "notes": "IT and engineering staffing",
+          "priority": 3,
+          "focus": "IT, engineering, technical"
+        }
+      ]
+    },
+    "direct_networking": {
+      "description": "Direct networking and outreach channels",
+      "enabled": true,
+      "channels": [
+        {
+          "name": "Y Combinator Work at a Startup",
+          "short_name": "YC Portal",
+          "url": "https://www.workatastartup.com/",
+          "notes": "YC startup job portal - check for contract roles",
+          "priority": 1,
+          "scrape_frequency": "daily"
+        },
+        {
+          "name": "CTO Cold Outreach",
+          "short_name": "CTO Outreach",
+          "notes": "Direct outreach to CTOs - 20 companies/week target",
+          "priority": 1,
+          "target_per_week": 20
+        }
+      ]
     },
     "rate_requirements": {
       "minimum_hourly": 100,

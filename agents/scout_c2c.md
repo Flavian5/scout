@@ -26,55 +26,81 @@
 ## C2C-Specific Configuration
 
 ### Rate Requirements (from persona)
-- **Minimum**: $100/hour USD
-- **Preferred**: $120-150/hour USD
-- **Project-based**: $10,000+ minimum
+- **Minimum**: $125/hour USD
+- **Preferred**: $150-250/hour USD
+- **Project-based**: $25,000+ minimum
 
-### Target Platforms
-- Dice (primary for C2C)
-- LinkedIn (contract filter)
-- Wellfound (contract/remote)
-- Toptal (premium contracts)
-- Gun.io (elite contracts)
+### Target Platforms (Priority Order)
+1. **Braintrust** - Worker-owned, high rates, C2C-friendly (vetting takes ~2 weeks)
+2. **A-Team** - Elite talent network, C2C available
+3. **Wellfound** - Startup contracts
+4. **LinkedIn** - Good for contract/C2C filter
+5. **Toptal/Gun.io** - Premium (requires membership)
+6. **Dice** - Fallback only (lower rates)
 
-## Discovery Workflow
+## Discovery Workflow (New Priority Order)
 
-### Phase 1: Dice Search (Primary C2C Source)
-1. Use `browser` to navigate Dice
-2. Search for:
-   - "Machine Learning Engineer contract"
-   - "ML Platform Engineer C2C"
-   - "Recommendation Systems contract"
-   - "Senior ML Engineer 1099"
-3. Filter by:
-   - Location: San Francisco, Seattle, Remote
-   - Contract type: C2C, Corp-to-Corp, 1099
-   - Posted: Last 2 days
-4. Extract: Rate, duration, company, project details
+### Phase 1: Boutique AI Agency Job Boards (Daily)
+1. Check Vector Institute partners program job board
+2. Check A-List AI/ML staffing opportunities
+3. Check Aylien NLP/AI specialist roles
+4. Apply directly with tailored pitch
 
-### Phase 2: LinkedIn Contract Search
+### Phase 2: Vetted Networks (Apply Now - 2 week vetting)
+1. **Braintrust**: Submit application immediately (vetting takes ~2 weeks)
+   - Application: https://braintrust.com/apply
+   - Highlight: Twitter-scale experience, project-based delivery
+2. **A-Team**: Submit application
+   - Application: https://ateam.io/join
+   - Focus: Elite talent, C2C-friendly
+
+### Phase 3: Y Combinator Portal (Daily)
+1. Navigate to https://www.workatastartup.com/
+2. Search for contract/consulting roles
+3. Filter by: ML Engineer, ML Platform, Recommendation
+4. Extract: rate, equity, company stage, contract type
+
+### Phase 4: CTO Cold Outreach (20 companies/week)
+1. Identify AI-first startups needing ML platform help
+2. Research CTO/technical leadership
+3. Send personalized outreach (see templates)
+4. Track in `data/cto_outreach.json`
+
+### Phase 5: Wellfound Contract Search
+1. Navigate to Wellfound contract jobs
+2. Search for ML/RecSys keywords
+3. Extract: rate, equity, company info
+
+### Phase 6: LinkedIn Contract Search
 1. Use authenticated browser session
 2. Search with contract filters:
    - Keywords: "ML Engineer", "ML Platform", "RecSys"
    - Filter: "Contract" or "Corp-to-Corp"
 3. Extract job details
 
-### Phase 3: Wellfound Contract Search
-1. Navigate to Wellfound contract jobs
-2. Search for ML/RecSys keywords
-3. Extract: rate, equity, company info
-
-### Phase 4: Toptal/Gun.io Networks
+### Phase 7: Toptal/Gun.io Networks
 1. Check if profile matches their requirements
 2. Search for relevant opportunities
 3. Note: These require application, not direct apply
 
-### Phase 5: Web Search for Contract Opportunities
+### Phase 8: Web Search for Contract Opportunities
 Additional queries:
 - "machine learning engineer contract corp-to-corp 2026"
-- "ML platform consultant rate 100+ hourly 2026"
+- "ML platform consultant rate 150+ hourly 2026"
 - "senior ML engineer independent contractor 2026"
 - "machine learning contract role San Francisco Seattle 2026"
+
+### Phase 9: Dice Search (Fallback Only)
+1. Use `browser` to navigate Dice
+2. Search for:
+   - "Machine Learning Engineer contract"
+   - "ML Platform Engineer C2C"
+   - "Recommendation Systems contract"
+3. Filter by:
+   - Location: San Francisco, Seattle, Remote
+   - Contract type: C2C, Corp-to-Corp, 1099
+   - Posted: Last 2 days
+4. Extract: Rate, duration, company, project details
 
 ## C2C-Specific Signal Detection
 
@@ -83,8 +109,8 @@ Additional queries:
 - "6 month", "12 month", "long-term contract", "project-based"
 
 ### Rate Signals:
-- "$100", "$120", "$150", "hourly", "rate"
-- Filter OUT roles below $100/hour
+- "$125", "$150", "$175", "$200", "$250", "hourly", "rate"
+- Filter OUT roles below $125/hour
 
 ### Project Type Signals:
 - **Roadmapping**: Strategic planning, architecture design
@@ -96,15 +122,16 @@ Additional queries:
 
 ### Company Signals:
 - Large tech: Amazon, Meta, Google, Netflix, Uber, Airbnb
+- AI-first startups: CZI, Recursion, Insitro, Arc Institute
+- Y Combinator startups
 - Consulting: Accenture, Deloitte, Cognizant
-- Startups needing ML platform build-out
 
 ## Output Format
 
 ```json
 {
   "job_id": "uuid",
-  "source": "dice|linkedin|wellfound|toptal|gunio|web_search",
+  "source": "braintrust|ateam|wellfound|linkedin|toptal|gunio|dice|web_search|yc_portal|cto_outreach",
   "company": "Company Name",
   "role_title": "ML Platform Engineer - Contract",
   "location": "Remote",
@@ -112,8 +139,8 @@ Additional queries:
   "job_description_raw": "Full JD text...",
   "contract_details": {
     "rate_type": "hourly|project",
-    "rate_min": 100,
-    "rate_max": 150,
+    "rate_min": 125,
+    "rate_max": 250,
     "duration": "6 months",
     "engagement_type": "C2C"
   },
@@ -127,18 +154,18 @@ Additional queries:
 
 ## Processing Rules
 
-1. **Rate Filter First**: Immediately filter out roles below $100/hour
+1. **Rate Filter First**: Immediately filter out roles below $125/hour
 2. **Duration Minimum**: Prefer 6+ month engagements
 3. **No Duplicates**: Dedupe by (company + role_title + url)
 4. **Capture Project Type**: Identify roadmapping, agentic, genrec, platform projects
 5. **Recent Focus**: Prioritize roles posted within 2 days
-6. **Wellfound Profile**: Consider setting up profile for visibility
+6. **Braintrust/A-Team Priority**: Apply to vetted networks first (long vetting time)
 
 ## Contract Type Priority
 
 | Priority | Type | Notes |
 |----------|------|-------|
-| 1 | Project-based ($10k+) | Best for scoped work |
+| 1 | Project-based ($25k+) | Best for scoped work |
 | 2 | 12-month contract | Stability |
 | 3 | 6-month contract | Common for ML projects |
 | 4 | Shorter contracts | Less preferred |

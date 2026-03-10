@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "description": "Boutique AI agency applications tracking for C2C contract opportunities",
+  "last_updated": "2026-03-09",
+  "agencies": [
+    {
+      "name": "Vector Institute",
+      "short_name": "Vector",
+      "status": "not_applied",
+      "application_url": null,
+      "applied_date": null,
+      "notes": "Partners program - AI specialists"
+    },
+    {
+      "name": "A-List",
+      "short_name": "A-List",
+      "status": "not_applied",
+      "application_url": null,
+      "applied_date": null,
+      "notes": "AI/ML staffing specialists"
+    },
+    {
+      "name": "Aylien",
+      "short_name": "Aylien",
+      "status": "not_applied",
+      "application_url": null,
+      "applied_date": null,
+      "notes": "NLP/AI specialists"
+    }
+  ],
+  "stats": {
+    "total_applied": 0,
+    "pending_response": 0,
+    "interviewing": 0,
+    "placed": 0,
+    "rejected": 0
+  }
+}

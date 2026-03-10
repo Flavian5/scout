@@ -1,6 +1,6 @@
 # Frank Meng
 
-Independent ML Consultant | RecSys & GenRec Specialist | C2C Contractor
+ML Platform Consultant | RecSys & GenRec Specialist | Project-Based Engagements
 
 San Francisco Bay Area, CA | hao.c.meng@gmail.com | +1 647-335-8875
 LinkedIn: linkedin.com/in/frankhmeng | GitHub: github.com/Flavian5
@@ -9,9 +9,9 @@ LinkedIn: linkedin.com/in/frankhmeng | GitHub: github.com/Flavian5
 
 ## Value Proposition
 
-**Independent Machine Learning Consultant** with 10+ years of hyperscale ML engineering experience, available for 6-12 month C2C contracts at **$100-150/hour USD**.
+**Independent Machine Learning Consultant** with 10+ years of hyperscale ML engineering experience, available for project-based C2C engagements.
 
-I deliver immediate value on complex ML platform and recommendation system projects. My Twitter-scale infrastructure experience ($5M/month cost savings, 1PB/hour pipelines) translates directly to enterprise RecSys and GenRec implementations.
+I deliver immediate value on complex ML platform and recommendation system projects. My Twitter-scale infrastructure experience ($5M/month cost savings, 1PB/hour pipelines) translates directly to enterprise RecSys and GenRec implementations. I work best on **fixed-scope, deliverable-based projects** where I can own the technical implementation end-to-end.
 
 ---
 
@@ -147,7 +147,7 @@ I deliver immediate value on complex ML platform and recommendation system proje
 
 ---
 
-## Rate Justification
+## Engagement & Pricing
 
 ### My rate reflects:
 
@@ -157,7 +157,9 @@ I deliver immediate value on complex ML platform and recommendation system proje
 4. **Broad Skill Coverage** (platform, RecSys, GenRec, LLM, agentic AI)
 5. **Architecture Leadership** (Staff-level scope, technical direction)
 
-### Market Comparison:
+### Pricing Options:
+
+**Hourly (for smaller engagements):**
 | Level | Typical Rate | My Rate |
 |-------|--------------|---------|
 | Mid-level MLE | $60-80/hr | — |
@@ -165,25 +167,45 @@ I deliver immediate value on complex ML platform and recommendation system proje
 | Staff MLE (contract) | $120-175/hr | $100-150/hr |
 | Principal/Architect | $150-250/hr | Competitive |
 
+**Project-Based (fixed-scope, deliverable-defined):**
+| Engagement Type | Typical Range | My Range |
+|-----------------|---------------|----------|
+| ML Platform Assessment | $15,000-30,000 | $20,000-25,000 |
+| RecSys Implementation (MVP) | $40,000-80,000 | $50,000-70,000 |
+| GenRec Prototype | $50,000-100,000 | $60,000-85,000 |
+| LLM Integration/RAG | $30,000-60,000 | $35,000-50,000 |
+| Full ML Platform Build | $100,000-250,000 | $120,000-200,000 |
+
 ---
 
 ## Availability & Terms
 
 | Parameter | Details |
 |-----------|---------|
-| **Rate** | $100-150/hour USD |
-| **Minimum** | $100/hour (will negotiate based on project scope) |
-| **Engagement** | 6-12 months preferred |
+| **Engagement Type** | Project-based (preferred) or hourly |
+| **Project Duration** | 3-12 months depending on scope |
 | **Location** | Remote-first (US time zone compatible) |
 | **Start Date** | Immediate |
-| **Availability** | Can work on multiple projects in parallel |
+| **Availability** | Can manage 1-2 parallel projects |
+
+### Engagement Structure:
+
+**Project-Based (Preferred):**
+- Fixed-scope, fixed-price with milestone payments
+- Deliverables defined upfront with change order process
+- Ideal for: MVPs, prototypes, platform builds, migrations
+
+**Hourly (Smaller scope):**
+- Time-and-materials for advisory or undefined scope
+- Bi-weekly or monthly invoicing
+- Ideal for: Consulting, code reviews, architecture guidance
 
 ### Standard Contract Terms:
-- Invoicing: Bi-weekly or monthly
+- Invoicing: Milestone-based (project) or bi-weekly (hourly)
 - Payment: Net 30 from invoice
 - Methods: Wire transfer, ACH
 - Travel: Client-covered for on-site requirements
-- Hours: Included in rate (5 hrs/week meetings max)
+- Meetings: Up to 5 hrs/week included (additional billed hourly)
 
 ---
 

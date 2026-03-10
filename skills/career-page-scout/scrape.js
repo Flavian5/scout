@@ -36,23 +36,30 @@ function parseArgs() {
     keywords: DEFAULT_KEYWORDS,
     category: DEFAULT_CATEGORY,
     outputFile: null,
-    verifyOnly: false
+    verifyOnly: false,
+    limit: 50
   };
   
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === '--keywords' && args[i + 1]) {
-      config.keywords = [args[i + 1]];
+    const arg = args[i];
+    const nextArg = args[i + 1];
+    
+    if (arg === '--keywords' || arg === '-k') {
+      config.keywords = [nextArg];
       i++;
-    } else if (args[i] === '--category' && args[i + 1]) {
-      config.category = args[i + 1];
+    } else if (arg === '--category' || arg === '-c') {
+      config.category = nextArg;
       i++;
-    } else if (args[i] === '--output' && args[i + 1]) {
-      config.outputFile = args[i + 1];
+    } else if (arg === '--output' || arg === '-o') {
+      config.outputFile = nextArg;
       i++;
-    } else if (args[i] === '--verify') {
+    } else if (arg === '--verify' || arg === '-v') {
       config.verifyOnly = true;
-    } else if (args[i] === '--all') {
+    } else if (arg === '--all' || arg === '-a') {
       config.category = 'all';
+    } else if (arg === '--limit' || arg === '-L') {
+      config.limit = parseInt(nextArg, 10);
+      i++;
     }
   }
   
@@ -117,6 +124,194 @@ async function checkCareerPage(url) {
 }
 
 /**
+ * ATS-specific selectors for different career page systems
+ */
+const ATS_SELECTORS = {
+  // Greenhouse
+  greenhouse: {
+    jobCard: '.job-post', // Greenhouse uses .job-post
+    title: '.job-post__title, .title a, h2 a',
+    location: '.job-post__location, .location',
+    link: 'a[href*="/jobs/"]',
+    pagination: '.pagination a.next, .pagination__next, a[rel="next"]',
+    searchInput: 'input[name="query"], input#search-query'
+  },
+  // Lever
+  lever: {
+    jobCard: '.posting-list-item, .posting-card',
+    title: '.posting-title a, h3 a',
+    location: '.posting-info__location, .location',
+    link: 'a[href*="/jobs/"]',
+    pagination: '.pagination a.next, .pagination-next a, a[data-test="pagination-next"]',
+    searchInput: 'input[type="search"], input[name="q"]'
+  },
+  // Workday
+  workday: {
+    jobCard: '[data-automation-id="jobCard"]',
+    title: '[data-automation-id="jobTitle"] a, h2 a',
+    location: '[data-automation-id="jobLocation"]',
+    link: 'a[href*="/jobs/"]',
+    pagination: 'button[data-automation-id="loadMoreJobs"], a[data-automation-id="nextPage"]',
+    searchInput: 'input[placeholder*="Search"], input[data-automation-id="searchInput"]'
+  },
+  // Ashby
+  ashby: {
+    jobCard: '.job-listing, .jobs-list-item',
+    title: '.job-title a, h3 a',
+    location: '.job-location, .location',
+    link: 'a[href*="/jobs/"]',
+    pagination: 'a[href*="page="], button:contains("Load more")',
+    searchInput: 'input[name="search"], input[placeholder*="Search"]'
+  },
+  // SmartRecruiters
+  smartrecruiters: {
+    jobCard: '.job-item, .posting-list__item',
+    title: '.posting-title a, h3 a',
+    location: '.posting-info__location',
+    link: 'a[href*="/jobs/"]',
+    pagination: '.pagination__next a, button[data-test="next-page"]',
+    searchInput: 'input[name="q"], input[placeholder*="Search"]'
+  },
+  // Default/generic
+  default: {
+    jobCard: '.job-card, .job-listing, .position, .job-opening, [data-testid*="job"], .career-job, .opening, .posting-card, .job-post',
+    title: 'h2, h3, .title, .job-title, [class*="title"], a[href*="/jobs/"]',
+    location: '.location, .job-location, [class*="location"], .posting-info__location',
+    link: 'a[href*="/jobs/"], a[href*="/position/"], a[href*="/apply/"]',
+    pagination: '.pagination a.next, .pagination__next, a[rel="next"], button:contains("Load more"), button:contains("Show more")',
+    searchInput: 'input[type="text"], input[name*="search"], input[placeholder*="Search"], input[aria-label*="Search"]'
+  }
+};
+
+/**
+ * Detect ATS type from page content
+ */
+async function detectATSType(page) {
+  const atsType = await page.evaluate(() => {
+    // Check for ATS-specific elements
+    if (document.querySelector('.greenhouse-app, #grnhse_app, .job-board')) return 'greenhouse';
+    if (document.querySelector('.lever-app, #lever-app, .posting-list')) return 'lever';
+    if (document.querySelector('.workday-app, [data-automation-id*="workday"]')) return 'workday';
+    if (document.querySelector('.ashby-app, .ashby-jobs')) return 'ashby';
+    if (document.querySelector('.smartrecruiters-app, .sr-app')) return 'smartrecruiters';
+    return 'default';
+  });
+  return atsType;
+}
+
+/**
+ * Scroll for pagination (infinite scroll)
+ */
+async function scrollForPagination(page, maxScrolls = 5) {
+  let lastHeight = 0;
+  
+  for (let i = 0; i < maxScrolls; i++) {
+    // Try clicking "Load More" button using text matching
+    const loadMoreButtons = await page.$$('button');
+    for (const btn of loadMoreButtons) {
+      try {
+        const text = await btn.evaluate(el => el.textContent.toLowerCase());
+        if (text.includes('load more') || text.includes('show more') || text.includes('view more') || text.includes('see more')) {
+          await btn.click();
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          break;
+        }
+      } catch (e) {}
+    }
+    
+    // Also try data-automation-id
+    try {
+      const dataBtn = await page.$('[data-automation-id="loadMoreJobs"]');
+      if (dataBtn) {
+        await dataBtn.click();
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    } catch (e) {}
+    
+    // Then try scrolling
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const newHeight = await page.evaluate(() => document.body.scrollHeight);
+    if (newHeight === lastHeight) break;
+    lastHeight = newHeight;
+  }
+}
+
+/**
+ * Extract jobs with more generic approach
+ */
+async function extractJobsWithATS(page, atsType) {
+  // First try ATS-specific selectors
+  const selectors = ATS_SELECTORS[atsType] || ATS_SELECTORS.default;
+  
+  let jobs = await page.evaluate((sel) => {
+    const results = [];
+    const cards = document.querySelectorAll(sel.jobCard);
+    
+    cards.forEach(card => {
+      const titleEl = card.querySelector(sel.title);
+      const locationEl = card.querySelector(sel.location);
+      const linkEl = card.querySelector(sel.link);
+      
+      if (titleEl) {
+        let link = '';
+        if (linkEl && linkEl.href) {
+          link = linkEl.href.startsWith('http') ? linkEl.href : new URL(linkEl.href, window.location.origin).href;
+        } else if (titleEl.tagName === 'A') {
+          link = titleEl.href.startsWith('http') ? titleEl.href : new URL(titleEl.href, window.location.origin).href;
+        }
+        
+        results.push({
+          title: titleEl.textContent.trim(),
+          location: locationEl ? locationEl.textContent.trim() : '',
+          link: link
+        });
+      }
+    });
+    
+    return results;
+  }, selectors);
+  
+  // If no jobs found, try more generic extraction
+  if (jobs.length === 0) {
+    jobs = await page.evaluate(() => {
+      const results = [];
+      
+      // Look for any links that point to job pages
+      const allLinks = document.querySelectorAll('a[href*="job"], a[href*="position"], a[href*="career"], a[href*="/jobs/"]');
+      
+      allLinks.forEach(link => {
+        const text = link.textContent.trim();
+        // Filter for likely job titles (not navigation links)
+        if (text && text.length > 5 && text.length < 150 && 
+            !text.toLowerCase().includes('view all') && 
+            !text.toLowerCase().includes('learn more') &&
+            !text.toLowerCase().includes('apply now') &&
+            !text.toLowerCase().includes('submit') &&
+            !text.toLowerCase().includes('sign in')) {
+          results.push({
+            title: text,
+            location: '',
+            link: link.href.startsWith('http') ? link.href : new URL(link.href, window.location.origin).href
+          });
+        }
+      });
+      
+      return results;
+    });
+  }
+  
+  // Deduplicate by link
+  const seen = new Set();
+  return jobs.filter(job => {
+    if (!job.link || seen.has(job.link)) return false;
+    seen.add(job.link);
+    return true;
+  });
+}
+
+/**
  * Search for jobs on a career page using Puppeteer
  */
 async function searchCareerPage(page, url, keywords) {
@@ -126,57 +321,72 @@ async function searchCareerPage(page, url, keywords) {
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await new Promise(resolve => setTimeout(resolve, 3000));
     
+    // Detect ATS type
+    const atsType = await detectATSType(page);
+    console.error(`Detected ATS: ${atsType}`);
+    
+    // Debug: Get page content info
+    const pageInfo = await page.evaluate(() => {
+      return {
+        title: document.title,
+        url: window.location.href,
+        bodyText: document.body.innerText.substring(0, 300),
+        linksCount: document.querySelectorAll('a').length,
+        buttonsCount: document.querySelectorAll('button').length,
+        inputsCount: document.querySelectorAll('input').length,
+        h2Count: document.querySelectorAll('h2').length,
+        h3Count: document.querySelectorAll('h3').length
+      };
+    });
+    console.error('Page info:', JSON.stringify(pageInfo));
+    
     // Try to find search input and search for each keyword
     for (const keyword of keywords) {
       try {
-        // Look for search input
-        const searchInput = await page.$('input[type="text"], input[name*="search"], input[placeholder*="Search"], input[aria-label*="Search"]');
+        // Look for search input using ATS-specific selectors
+        const selectors = ATS_SELECTORS[atsType] || ATS_SELECTORS.default;
+        const searchInput = await page.$(`${selectors.searchInput}, input[type="text"], input[name*="search"]`);
         
         if (searchInput) {
           await searchInput.click();
           await searchInput.type(keyword);
           await searchInput.press('Enter');
           await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          // Scroll for pagination after search
+          await scrollForPagination(page, 3);
         }
         
-        // Extract job listings
-        const pageJobs = await page.evaluate(() => {
-          const results = [];
-          
-          // Common job card selectors
-          const jobCards = document.querySelectorAll('.job-card, .job-listing, .position, .job-opening, [data-testid*="job"], .career-job, .opening');
-          
-          jobCards.forEach(card => {
-            const titleEl = card.querySelector('h2, h3, .title, .job-title, [class*="title"]');
-            const locationEl = card.querySelector('.location, .job-location, [class*="location"]');
-            const linkEl = card.querySelector('a[href*="job"], a[href*="position"], a[href*="apply"]');
-            
-            if (titleEl) {
-              results.push({
-                title: titleEl.textContent.trim(),
-                location: locationEl ? locationEl.textContent.trim() : '',
-                link: linkEl ? (linkEl.href.startsWith('http') ? linkEl.href : new URL(linkEl.href, window.location.origin).href) : ''
-              });
-            }
-          });
-          
-          return results;
-        });
+        // Extract job listings with ATS-specific selectors
+        const pageJobs = await extractJobsWithATS(page, atsType);
         
         jobs.push(...pageJobs.map(job => ({
           ...job,
-          keyword_searched: keyword
+          keyword_searched: keyword,
+          ats_type: atsType
         })));
         
         // Clear search for next keyword
         if (searchInput) {
           await searchInput.click({ clickCount: 3 });
           await page.keyboard.press('Backspace');
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
         
       } catch (e) {
         // Continue with next keyword
       }
+    }
+    
+    // If no jobs found with search, try extracting all jobs on page
+    if (jobs.length === 0) {
+      await scrollForPagination(page, 3);
+      const allJobs = await extractJobsWithATS(page, atsType);
+      jobs.push(...allJobs.map(job => ({
+        ...job,
+        keyword_searched: 'all',
+        ats_type: atsType
+      })));
     }
     
   } catch (e) {
