@@ -288,7 +288,8 @@
       "wellfound": {
         "enabled": true,
         "search_template": "https://wellfound.com/remote/contract-jobs?query={keywords}",
-        "priority": 2
+        "priority": 4,
+        "notes": "Lower priority - mostly startups with limited cash"
       },
       "toptal": {
         "enabled": true,
@@ -319,78 +320,18 @@
         "notes": "Lower rates, less relevant for Staff-level"
       }
     },
-    "boutique_ai_agencies": {
-      "description": "Boutique AI/ML agencies with specialized talent",
-      "enabled": true,
-      "agencies": [
-        {
-          "name": "Vector Institute",
-          "short_name": "Vector",
-          "notes": "Partners program - AI specialists",
-          "priority": 2,
-          "focus": "AI/ML talent pipeline"
-        },
-        {
-          "name": "A-List",
-          "short_name": "A-List",
-          "notes": "AI/ML staffing specialists",
-          "priority": 2,
-          "focus": "Machine learning, data science"
-        },
-        {
-          "name": "Aylien",
-          "short_name": "Aylien",
-          "notes": "NLP/AI specialists",
-          "priority": 2,
-          "focus": "NLP, AI engineering"
-        }
-      ]
-    },
-    "canadian_staffing": {
-      "description": "Canadian staffing firms for government/enterprise contracts",
-      "enabled": true,
-      "agencies": [
-        {
-          "name": "Procom",
-          "short_name": "Procom",
-          "notes": "Government/enterprise focus",
-          "priority": 3,
-          "focus": "Enterprise IT, government contracts"
-        },
-        {
-          "name": "S.i. Systems",
-          "short_name": "S.i. Systems",
-          "notes": "Tech specialists",
-          "priority": 3,
-          "focus": "Technology professionals"
-        },
-        {
-          "name": "Eagle Professional Resources",
-          "short_name": "Eagle",
-          "notes": "IT and engineering staffing",
-          "priority": 3,
-          "focus": "IT, engineering, technical"
-        }
-      ]
-    },
     "direct_networking": {
       "description": "Direct networking and outreach channels",
       "enabled": true,
       "channels": [
         {
-          "name": "Y Combinator Work at a Startup",
-          "short_name": "YC Portal",
-          "url": "https://www.workatastartup.com/",
-          "notes": "YC startup job portal - check for contract roles",
-          "priority": 1,
-          "scrape_frequency": "daily"
-        },
-        {
           "name": "CTO Cold Outreach",
           "short_name": "CTO Outreach",
-          "notes": "Direct outreach to CTOs - 20 companies/week target",
+          "notes": "LinkedIn Sales Navigator - 50 InMails/month, target Series C+ companies",
           "priority": 1,
-          "target_per_week": 20
+          "target_per_week": 20,
+          "tool": "LinkedIn Sales Navigator",
+          "cost": "$99/month"
         }
       ]
     },

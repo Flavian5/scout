@@ -67,16 +67,6 @@ For US-based contracts as Canadian consultant:
 5. **Toptal/Gun.io** - Premium (requires membership)
 6. **Dice** - Fallback only (lower rates)
 
-### Boutique AI Agencies (Direct Applications)
-- **Vector Institute** - Partners program
-- **A-List** - AI/ML staffing specialists
-- **Aylien** - NLP/AI specialists
-
-### Canadian Staffing (Enterprise/Government)
-- **Procom** - Government/enterprise focus
-- **S.i. Systems** - Tech specialists
-- **Eagle Professional Resources** - IT and engineering
-
 ### Engagement Type Preference
 **Project-based SOW preferred over hourly contracting**
 
@@ -107,12 +97,11 @@ For US-based contracts as Canadian consultant:
 - "Through agency" / "Via staffing"
 
 ### Target Companies for C2C
-- Large tech with RecSys needs (Amazon, Meta, Google, Netflix, Uber, Airbnb)
-- Consulting firms with ML practices
 - Companies needing ML platform modernization
-- AI-first startups (CZI, Recursion, Insitro)
-- Y Combinator startups (via workatastartup.com)
-- Direct CTO outreach (20 companies/week)
+- Voice AI / Agentic systems companies
+- RecSys modernization at scale
+- Series C+ companies with ML budgets
+- Direct CTO outreach via LinkedIn Sales Navigator
 
 ## Target Companies
 
