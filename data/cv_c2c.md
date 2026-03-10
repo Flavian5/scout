@@ -1,6 +1,6 @@
 # Frank Meng
 
-ML Platform Consultant | RecSys & GenRec Specialist | Project-Based Engagements
+**GenRec & Hyperscale ML Infrastructure Consultant** | Generative Recommendation Systems | Twitter-Scale Pipelines
 
 San Francisco Bay Area, CA | hao.c.meng@gmail.com | +1 647-335-8875
 LinkedIn: linkedin.com/in/frankhmeng | GitHub: github.com/Flavian5
@@ -9,9 +9,9 @@ LinkedIn: linkedin.com/in/frankhmeng | GitHub: github.com/Flavian5
 
 ## Value Proposition
 
-**Independent Machine Learning Consultant** with 10+ years of hyperscale ML engineering experience, available for project-based C2C engagements.
+**Independent ML Consultant specializing in Generative Recommendation (GenRec) systems and hyperscale ML infrastructure**—rare expertise at the intersection of cutting-edge generative models and production-scale systems.
 
-I deliver immediate value on complex ML platform and recommendation system projects. My Twitter-scale infrastructure experience ($5M/month cost savings, 1PB/hour pipelines) translates directly to enterprise RecSys and GenRec implementations. I work best on **fixed-scope, deliverable-based projects** where I can own the technical implementation end-to-end.
+I deliver immediate value on complex GenRec and ML platform projects. My Twitter-scale infrastructure ($5M/month savings, 1PB/hour pipelines) and production GenRec experience (RQ-VAE, diffusion models, semantic IDs) translate directly to enterprise implementations. I work best on **fixed-scope, deliverable-based projects** where I can own the technical implementation end-to-end.
 
 ---
 
@@ -29,16 +29,17 @@ I deliver immediate value on complex ML platform and recommendation system proje
 ### Independent Consultant (RussellAI)
 *July 2023 – Present | Toronto, Canada*
 
-**Voice AI Agent Development**
-- Built and scaled voice AI agent system to 10,000+ parallel instances
-- Achieved RPM (requests per minute) exceeding 10,000
-- GPT-4 based agent architecture for conversational AI
-
-**Generative Recommendation (GenRec)**
+**Generative Recommendation (GenRec) — Most Differentiated Work**
 - Semantic ID generation using RQ-VAE and Rotation-based approaches
 - Steerable LLM Recsys Hybrid with synthetic data generation using semantic IDs and teacher models
 - Research on VAE-based recommendation generation, diffusion models, and flow-based generative models
 - Hybrid recommendation combining learned sparse embeddings with generative approaches
+- **This work is rare**: Few consultants have production GenRec experience at scale
+
+**Voice AI Agent Development**
+- Built and scaled voice AI agent system to 10,000+ parallel instances
+- Achieved RPM (requests per minute) exceeding 10,000
+- GPT-4 based agent architecture for conversational AI
 
 ---
 
@@ -164,17 +165,18 @@ I deliver immediate value on complex ML platform and recommendation system proje
 |-------|--------------|---------|
 | Mid-level MLE | $60-80/hr | — |
 | Senior MLE | $80-120/hr | — |
-| Staff MLE (contract) | $120-175/hr | $100-150/hr |
-| Principal/Architect | $150-250/hr | Competitive |
+| Staff MLE (contract) | $150-200/hr | **$175-200/hr** |
+| Principal/Architect | $200-300/hr | **$200-250/hr** |
+| **Specialized (GenRec/Hyperscale)** | — | **$225-275/hr** |
 
 **Project-Based (fixed-scope, deliverable-defined):**
 | Engagement Type | Typical Range | My Range |
 |-----------------|---------------|----------|
-| ML Platform Assessment | $15,000-30,000 | $20,000-25,000 |
-| RecSys Implementation (MVP) | $40,000-80,000 | $50,000-70,000 |
-| GenRec Prototype | $50,000-100,000 | $60,000-85,000 |
-| LLM Integration/RAG | $30,000-60,000 | $35,000-50,000 |
-| Full ML Platform Build | $100,000-250,000 | $120,000-200,000 |
+| ML Platform Assessment | $25,000-40,000 | $30,000-40,000 |
+| RecSys Implementation (MVP) | $60,000-100,000 | $75,000-100,000 |
+| **GenRec Prototype** | $75,000-150,000 | **$100,000-150,000** |
+| LLM Integration/RAG | $40,000-75,000 | $50,000-75,000 |
+| Full ML Platform Build | $150,000-350,000 | $200,000-300,000 |
 
 ---
 

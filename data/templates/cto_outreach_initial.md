@@ -1,9 +1,9 @@
 # CTO Outreach - Initial Message
 
 ## Subject Line Options
-- Quick question about [Company Name]'s ML roadmap
-- ML Platform Consultant - Twitter-scale experience
-- Helping AI-first companies scale their ML infrastructure
+- Quick question about [Company Name]'s recommendation roadmap
+- GenRec Consultant - Twitter-scale (1PB/hr) experience
+- Generative Recommendation expertise for [Company Name]
 
 ## Email Template
 
@@ -11,21 +11,22 @@ Hi [CTO Name],
 
 I came across [Company Name] and was impressed by [specific detail about their product/technology/mission].
 
-I'm a **ML Platform Consultant** with 10+ years of experience building production ML systems at Twitter-scale (1PB/hour data pipelines). I've helped companies like [relevant example] design and implement recommendation systems, ML infrastructure, and feature stores.
+I'm a **GenRec & Hyperscale ML Infrastructure Consultant** with rare expertise in Generative Recommendation (GenRec) systems—RQ-VAE, diffusion models, semantic IDs—and production-scale ML infrastructure (1PB/hour pipelines, $5M/month cost optimization at Twitter).
 
-I'm reaching out because I specialize in helping AI-first companies scale their ML capabilities - whether that's:
-- Building a new ML platform from scratch
-- Optimizing existing recommendation infrastructure
-- Architecting for production-scale ML workloads
+I'm reaching out because I specialize in helping AI-first companies build next-gen recommendation systems:
+- **GenRec Prototypes** — VAE/diffusion-based recommendation systems
+- **ML Platform Modernization** — Feature stores, model serving, MLOps
+- **Hyperscale Infrastructure** — Scaling from millions to billions of users
 
-Would you be open to a 15-minute call to discuss your current ML challenges? No pressure - I'm happy to share some thoughts even if there's no immediate fit.
+Would you be open to a 15-minute call to discuss your recommendation infrastructure roadmap? No pressure—I'm happy to share some technical perspectives even if there's no immediate fit.
 
 Best regards,
 Frank Meng
-ML Platform Consultant
+GenRec & Hyperscale ML Infrastructure Consultant
 [Phone] | [Email]
 
 ## When to Use
 - First contact with CTO
-- Company has clear ML/AI focus
-- Found via YC portal, Wellfound, or direct research
+- Company has clear RecSys/ML focus
+- Found via YC portal, Wellfound, LinkedIn, or direct research
+- Targeting companies building recommendation or personalization systems

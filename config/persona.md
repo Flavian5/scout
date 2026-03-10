@@ -2,7 +2,7 @@
 
 ## Professional Summary
 
-**ML Platform Consultant for AI-first companies** with 10+ years of experience building production ML systems at Twitter-scale (1PB/hour data pipelines). Expert in recommendation platforms, MLOps infrastructure, and project-based delivery. TN-eligible for US roles.
+**GenRec & Hyperscale ML Infrastructure Consultant** with 10+ years of experience building production ML systems at Twitter-scale (1PB/hour data pipelines, $5M/month cost optimization). Rare expertise in Generative Recommendation (GenRec) systems—RQ-VAE, diffusion models, semantic IDs. Expert in recommendation platforms, MLOps infrastructure, and project-based delivery. TN-eligible for US roles.
 
 ## Core Skills
 
@@ -71,14 +71,14 @@ For US-based contracts as Canadian consultant:
 **Project-based SOW preferred over hourly contracting**
 
 - **Project-Based** (Preferred): Fixed-scope, deliverable-defined engagements
-  - ML Platform Assessment: $25K-35K
-  - RecSys Implementation: $60K-90K
-  - GenRec Prototype: $75K-100K
-  - Full ML Platform Build: $150K-250K
+  - ML Platform Assessment: $30K-40K
+  - RecSys Implementation: $75K-100K
+  - GenRec Prototype: $100K-150K
+  - Full ML Platform Build: $200K-300K
   
 - **Hourly** (Secondary): For smaller scope or undefined work
-  - Minimum: $125/hour USD
-  - Preferred: $150-250/hour USD (Braintrust/A-Team range)
+  - Minimum: $175/hour USD
+  - Preferred: $200-275/hour USD (GenRec/Hyperscale premium)
 
 ### Role Types to Filter FOR:
 - "SOW" / "Statement of Work"
@@ -130,7 +130,7 @@ For US-based contracts as Canadian consultant:
 - **Visa**: TN visa eligible (Canadian citizen)
 
 ### C2C Contracts
-- **Rate**: $125+/hour USD minimum
+- **Rate**: $175+/hour USD minimum (GenRec/Hyperscale: $225-275/hr)
 - **Location**: Remote US or client site (travel covered)
 - **Engagement**: 6+ months preferred
 
@@ -167,8 +167,9 @@ For US-based contracts as Canadian consultant:
 
 | Differentiator | Value |
 |----------------|-------|
-| Scale Experience | Twitter-scale (1PB/hour pipelines) |
+| Scale Experience | Twitter-scale (1PB/hour pipelines, $5M/mo savings) |
+| GenRec Expertise | RQ-VAE, diffusion models, semantic IDs (rare) |
 | Years of Experience | 10+ years |
 | Delivery Model | Project-based SOW preferred |
-| Rate Range | $125-250/hour USD |
-| Specialization | ML Platform Consultant for AI-first companies |
+| Rate Range | $175-275/hour USD |
+| Specialization | GenRec & Hyperscale ML Infrastructure Consultant |

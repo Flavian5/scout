@@ -1,6 +1,6 @@
 # Frank Meng
 
-Staff Machine Learning Engineer | RecSys & Generative Recommendation Systems | MLOps
+**Staff ML Engineer | Generative Recommendation (GenRec) & Hyperscale ML Infrastructure** | Twitter-Scale Proven
 
 San Francisco Bay Area, CA | hao.c.meng@gmail.com | +1 647-335-8875
 LinkedIn: linkedin.com/in/frankhmeng | GitHub: github.com/Flavian5
@@ -10,7 +10,7 @@ TN Visa Eligible (Canadian Citizen)
 
 ## Professional Summary
 
-Staff-level Machine Learning Engineer with 10+ years of experience building production ML systems at hyperscale (Twitter/X) and leading ML platform initiatives across consumer tech and financial services. Deep expertise in two-stage recommendation systems, generative recommendation (GenRec) with VAEs and diffusion models, and end-to-end MLOps infrastructure. TN-eligible.
+Staff-level Machine Learning Engineer with 10+ years of experience building production ML systems at hyperscale (Twitter/X) and leading ML platform initiatives. **Rare expertise in Generative Recommendation (GenRec) systems**—RQ-VAE, diffusion models, semantic IDs—and production-scale ML infrastructure (1PB/hour pipelines, $5M/month cost optimization). Proven track record scaling ML from millions to billions of users. TN-eligible for US roles.
 
 ---
 
@@ -50,15 +50,16 @@ Staff-level Machine Learning Engineer with 10+ years of experience building prod
 ### Independent Consultant (RussellAI)
 *July 2023 – Present | Toronto, Canada*
 
+**Generative Recommendation (GenRec) — Differentiated Expertise**
+- Research and development on GenRec systems using VAEs and diffusion models
+- Flow-based generative models for recommendation diversity
+- Hybrid recommendation combining learned sparse embeddings with generative approaches
+- Semantic ID generation using RQ-VAE and Rotation-based approaches
+
 **Voice AI Agent Development**
 - Built and scaled voice AI agent system to 10,000+ parallel instances
 - Achieved RPM (requests per minute) exceeding 10,000
 - GPT-4 based agent architecture for conversational AI
-
-**Generative Recommendation (GenRec)**
-- Research and development on GenRec systems using VAEs and diffusion models
-- Flow-based generative models for recommendation diversity
-- Hybrid recommendation combining learned sparse embeddings with generative approaches
 
 ---
 
