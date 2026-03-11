@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 
 /**
- * LinkedIn Job Scraper (Public Search Approach)
+ * LinkedIn Job Scraper (Authenticated Session + Full JD Extraction)
  * 
- * Uses Playwright to fetch and parse LinkedIn public job search.
- * Supports both FTE and Contract positions.
+ * Uses Playwright with authenticated session cookies to:
+ * 1. Bypass anti-bot measures
+ * 2. Extract full job descriptions from individual job pages
  * 
  * Usage:
  *   node scrape.js --keywords "Machine Learning Engineer" --location "San Francisco Bay Area"
  *   node scrape.js --keywords "ML Engineer" --include-contract
- *   node scrape.js --keywords "ML Engineer" --output fte.json --output-contract contracts.json
+ *   node scrape.js --keywords "ML Engineer" --output fte.json --max-jd 10
  * 
  * Output: JSON array of job objects to stdout
  */
@@ -21,7 +22,26 @@ const { v4: uuidv4 } = require('uuid');
 
 // Default configuration
 const DEFAULT_LOCATION = 'San Francisco Bay Area';
-const DEFAULT_LIMIT = 50;
+const DEFAULT_LIMIT = 25;
+const DEFAULT_MAX_JD = 15; // Max jobs to get full JD for (to avoid rate limiting)
+
+// Secrets path
+const SECRETS_PATH = path.join(__dirname, '..', '..', 'config', 'secrets.json');
+
+/**
+ * Load secrets from config/secrets.json
+ */
+function loadSecrets() {
+  try {
+    if (fs.existsSync(SECRETS_PATH)) {
+      const content = fs.readFileSync(SECRETS_PATH, 'utf8');
+      return JSON.parse(content);
+    }
+  } catch (e) {
+    console.error('Warning: Could not load secrets.json:', e.message);
+  }
+  return null;
+}
 
 /**
  * Parse command line arguments
@@ -32,6 +52,7 @@ function parseArgs() {
     keywords: '',
     location: DEFAULT_LOCATION,
     limit: DEFAULT_LIMIT,
+    maxJD: DEFAULT_MAX_JD,
     outputFile: null,
     outputContractFile: null,
     includeContract: false
@@ -46,6 +67,9 @@ function parseArgs() {
       i++;
     } else if (args[i] === '--limit' && args[i + 1]) {
       config.limit = parseInt(args[i + 1], 10);
+      i++;
+    } else if (args[i] === '--max-jd' && args[i + 1]) {
+      config.maxJD = parseInt(args[i + 1], 10);
       i++;
     } else if (args[i] === '--output' && args[i + 1]) {
       config.outputFile = args[i + 1];
@@ -63,20 +87,11 @@ function parseArgs() {
 
 /**
  * Build LinkedIn public search URL
- * 
- * @param {string} keywords - Search keywords
- * @param {string} location - Location
- * @param {string} jobType - F (Freelance), C (Contract), P (Part-time), F (Full-time)
- * @param {number} start - Pagination start
  */
 function buildPublicSearchUrl(keywords, location, jobType = 'F', start = 0) {
   const encodedKeywords = encodeURIComponent(keywords);
   const encodedLocation = encodeURIComponent(location);
   
-  // LinkedIn public job search URL
-  // f_TPR: r86400 (24h), r604800 (7 days), r2592000 (30 days)
-  // jobType: F (Freelance), C (Contract), P (Part-time), I (Internship), F (Full-time)
-  // For full-time + contract: don't specify jobType (returns all)
   if (jobType === 'F') {
     return `https://www.linkedin.com/jobs/search/?keywords=${encodedKeywords}&location=${encodedLocation}&f_TPR=r604800&start=${start}`;
   }
@@ -87,7 +102,7 @@ function buildPublicSearchUrl(keywords, location, jobType = 'F', start = 0) {
  * Extract job card data from LinkedIn public search results
  */
 async function extractJobCards(page) {
-  await new Promise(resolve => setTimeout(resolve, 3000));
+  await new Promise(resolve => setTimeout(resolve, 2000));
   
   const jobCards = await page.evaluate(() => {
     const cards = document.querySelectorAll('.jobs-card-layout, .base-card, .base-search-card, .job-card-list__entity, .jobs-search-results__list-item');
@@ -112,6 +127,60 @@ async function extractJobCards(page) {
 }
 
 /**
+ * Extract full job description from individual job page
+ */
+async function extractFullJD(page, jobUrl) {
+  try {
+    await page.goto(jobUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // Try multiple selectors for job description
+    const jdText = await page.evaluate(() => {
+      // Main JD content
+      const selectors = [
+        '.job-view-layout .jobs-description__content',
+        '.jobs-description__content',
+        '.job-details-skill-match-status-list__container',
+        '.show-more-less-html__markup',
+        '.jobs-box__html-content',
+        '[data-test-id="job-details"]',
+        '.job-details-container'
+      ];
+      
+      for (const sel of selectors) {
+        const el = document.querySelector(sel);
+        if (el && el.textContent.trim().length > 100) {
+          return el.textContent.trim();
+        }
+      }
+      
+      // Fallback: get all text from main content area
+      const main = document.querySelector('.job-view-layout');
+      return main ? main.textContent.trim().substring(0, 10000) : '';
+    });
+    
+    // Extract salary if available
+    const salary = await page.evaluate(() => {
+      const salarySelectors = [
+        '.job-details-salary-snippet-container',
+        '.jobs-description__salary',
+        '[data-test-id="salary"]'
+      ];
+      for (const sel of salarySelectors) {
+        const el = document.querySelector(sel);
+        if (el) return el.textContent.trim();
+      }
+      return null;
+    });
+    
+    return { jdText, salary };
+  } catch (e) {
+    console.error(`  Warning: Could not extract JD from ${jobUrl}: ${e.message}`);
+    return { jdText: '', salary: null };
+  }
+}
+
+/**
  * Detect signals in job description using keyword matching
  */
 function detectSignals(description, company) {
@@ -119,17 +188,17 @@ function detectSignals(description, company) {
   const text = (description + ' ' + company).toLowerCase();
   
   // ML/RecSys signals
-  if (text.includes('recommendation') || text.includes('recsys') || text.includes('rec')) signals.push('recsys');
-  if (text.includes('two-stage') || text.includes('two stage')) signals.push('two_stage_ranking');
-  if (text.includes('generation') || text.includes('genrec')) signals.push('genrec');
+  if (text.includes('recommendation') || text.includes('recsys') || text.includes('rec ')) signals.push('recsys');
+  if (text.includes('two-stage') || text.includes('two stage') || text.includes('two stage')) signals.push('two_stage_ranking');
+  if (text.includes('generative recommendation') || text.includes('genrec')) signals.push('genrec');
   if (text.includes('foundation model') || text.includes('llm') || text.includes('transformer')) signals.push('foundation_models');
   
   // Bio-AI signals  
-  if (text.includes('virtual cell') || text.includes('cell')) signals.push('virtual_cell');
+  if (text.includes('virtual cell') || text.includes('cell') || text.includes('cellular')) signals.push('virtual_cell');
   if (text.includes('digital twin')) signals.push('digital_twin');
   if (text.includes('drug discovery') || text.includes('drug')) signals.push('drug_discovery');
   if (text.includes('phenomics')) signals.push('phenomics');
-  if (text.includes('bioai') || text.includes('bio-ai')) signals.push('bio_ai');
+  if (text.includes('bioai') || text.includes('bio-ai') || text.includes('computational biology')) signals.push('bio_ai');
   
   // Infrastructure signals
   if (text.includes('ml platform') || text.includes('ml infrastructure')) signals.push('ml_platform');
@@ -137,14 +206,14 @@ function detectSignals(description, company) {
   if (text.includes('ml pipeline') || text.includes('pipeline')) signals.push('ml_pipeline');
   
   // Other signals
-  if (text.includes('voice agent') || text.includes('voice')) signals.push('voice_agent');
-  if (text.includes('c automatio') || text.includes('customer experience')) signals.push('cx_automation');
+  if (text.includes('voice agent') || text.includes('voice ai')) signals.push('voice_agent');
+  if (text.includes('customer experience') || text.includes('cx automation')) signals.push('cx_automation');
   
-  return signals;
+  return [...new Set(signals)]; // Dedupe
 }
 
 /**
- * Main scraper function with pagination
+ * Main scraper function with authenticated session and full JD extraction
  */
 async function scrape() {
   const config = parseArgs();
@@ -155,9 +224,15 @@ async function scrape() {
     process.exit(1);
   }
   
+  // Load secrets
+  const secrets = loadSecrets();
+  const hasAuth = secrets?.linkedin?.li_at && secrets?.linkedin?.jsessionid;
+  
   console.error(`Searching LinkedIn for: "${config.keywords}" in ${config.location}`);
   console.error(`Date filter: Last 7 days`);
   console.error(`Include contract: ${config.includeContract}`);
+  console.error(`Authenticated session: ${hasAuth ? 'YES' : 'NO (will use public search)'}`);
+  console.error(`Max jobs for full JD: ${config.maxJD}`);
   
   const browser = await chromium.launch({ 
     headless: true,
@@ -173,9 +248,40 @@ async function scrape() {
     ]
   });
   
-  const context = await browser.newContext({
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36'
-  });
+  // Create context with or without auth
+  const contextOptions = {
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    locale: 'en-US',
+    viewport: { width: 1920, height: 1080 }
+  };
+  
+  const context = await browser.newContext(contextOptions);
+  
+  // Set authenticated cookies if available
+  if (hasAuth) {
+    console.error('Setting authenticated session cookies...');
+    await context.addCookies([
+      {
+        name: 'li_at',
+        value: secrets.linkedin.li_at,
+        domain: '.linkedin.com',
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'Lax'
+      },
+      {
+        name: 'JSESSIONID',
+        value: secrets.linkedin.jsessionid,
+        domain: '.linkedin.com',
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'Lax'
+      }
+    ]);
+  }
+  
   const page = await context.newPage();
   
   const fteResults = [];
@@ -195,7 +301,7 @@ async function scrape() {
       
       const searchUrl = buildPublicSearchUrl(config.keywords, config.location, 'F', pageStart);
       await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
       const jobs = await extractJobCards(page);
       console.error(`Found ${jobs.length} job cards`);
@@ -219,7 +325,7 @@ async function scrape() {
           salary_range: null,
           posted_date: job.posted,
           job_type: 'FTE',
-          detected_signals: detectSignals('', job.company),
+          detected_signals: [],
           scraped_at: new Date().toISOString()
         };
         
@@ -236,9 +342,30 @@ async function scrape() {
       await new Promise(resolve => setTimeout(resolve, 2000));
     }
     
+    // Phase 2: Extract full JDs for top jobs
+    if (fteResults.length > 0 && config.maxJD > 0) {
+      console.error(`\n=== Phase 2: Extracting Full JDs (${Math.min(config.maxJD, fteResults.length)} jobs) ===`);
+      
+      const jobsToProcess = fteResults.slice(0, config.maxJD);
+      
+      for (let i = 0; i < jobsToProcess.length; i++) {
+        const job = jobsToProcess[i];
+        console.error(`  [${i+1}/${jobsToProcess.length}] Getting JD for: ${job.role_title} at ${job.company}`);
+        
+        const { jdText, salary } = await extractFullJD(page, job.application_url);
+        
+        job.job_description_raw = jdText;
+        job.salary_range = salary;
+        job.detected_signals = detectSignals(jdText, job.company);
+        
+        // Rate limiting between JD fetches
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
+    }
+    
     // Then, search for Contract jobs if requested
     if (config.includeContract) {
-      console.error(`\n=== Phase 2: Contract Jobs ===`);
+      console.error(`\n=== Phase 3: Contract Jobs ===`);
       pageStart = 0;
       pageCount = 0;
       
@@ -246,10 +373,9 @@ async function scrape() {
         pageCount++;
         console.error(`Page ${pageCount} (start=${pageStart})`);
         
-        // Search for contract/freelance jobs
         const searchUrl = buildPublicSearchUrl(config.keywords, config.location, 'C', pageStart);
         await page.goto(searchUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise(resolve => setTimeout(resolve, 3000));
         
         const jobs = await extractJobCards(page);
         console.error(`Found ${jobs.length} contract job cards`);
@@ -259,7 +385,6 @@ async function scrape() {
         }
         
         for (const job of jobs) {
-          // Skip if already in FTE results
           if (seenLinks.has(job.link)) continue;
           seenLinks.add(job.link);
           
@@ -274,7 +399,7 @@ async function scrape() {
             salary_range: null,
             posted_date: job.posted,
             job_type: 'Contract',
-            detected_signals: detectSignals('', job.company),
+            detected_signals: [],
             scraped_at: new Date().toISOString()
           };
           
@@ -294,6 +419,7 @@ async function scrape() {
     
     console.error(`\n=== Summary ===`);
     console.error(`FTE jobs: ${fteResults.length}`);
+    console.error(`  - Jobs with full JD: ${fteResults.filter(j => j.job_description_raw).length}`);
     console.error(`Contract jobs: ${contractResults.length}`);
     
     // Output FTE results

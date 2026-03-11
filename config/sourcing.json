@@ -253,8 +253,9 @@
       "filters": [" posted today", "linkedinRecruiter"]
     },
     "wellfound": {
-      "enabled": true,
-      "search_template": "https://wellfound.com/jobs?query={keywords}&loc=San_Francisco"
+      "enabled": false,
+      "search_template": "https://wellfound.com/jobs?query={keywords}&loc=San_Francisco",
+      "notes": "Disabled - cookies stale"
     },
     "glassdoor": {
       "enabled": false,
