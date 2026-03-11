@@ -132,7 +132,7 @@ Return ONLY the tailored CV in markdown format. Do not add explanations."""
 
     try:
         response = client.chat.completions.create(
-            model="anthropic/claude-3.5-sonnet",
+            model="minimax/minimax-m2.5",
             messages=[
                 {"role": "system", "content": "You are an expert resume writer. Return only valid markdown CV."},
                 {"role": "user", "content": prompt}
@@ -191,7 +191,7 @@ Return ONLY the cover letter in markdown format."""
 
     try:
         response = client.chat.completions.create(
-            model="anthropic/claude-3.5-sonnet",
+            model="minimax/minimax-m2.5",
             messages=[
                 {"role": "system", "content": "You are an expert cover letter writer. Return only valid markdown."},
                 {"role": "user", "content": prompt}

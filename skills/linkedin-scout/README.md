@@ -1,13 +1,13 @@
 # Skill: linkedin-scout
 
 ## Description
-Custom Playwright-based LinkedIn job scraper that uses authenticated session cookies to bypass anti-bot measures. Extracts job postings using LLM vision capabilities to parse the dynamic DOM.
+LinkedIn Recommended Jobs Scraper - Uses authenticated session cookies to scrape job listings from LinkedIn's recommended feed. Clicks each job card and extracts full job descriptions from the right panel.
 
 ## Capabilities
 - `browser` - Navigate LinkedIn with authenticated session
 - Extract job details: title, company, location, salary, description
-- Handle pagination and filtering
-- Session cookie refresh detection
+- Click-based JD extraction from job details panel
+- Signal detection in job descriptions
 
 ## Configuration
 
@@ -18,19 +18,41 @@ LINKEDIN_JSESSIONID="your_jsessionid_cookie"
 ```
 
 ### Storage Location
-Cookies stored in: `~/.openclaw/skills/linkedin-scout/cookies.json`
+Cookies stored in: `config/secrets.json`
+
+```json
+{
+  "linkedin": {
+    "li_at": "your_li_at_cookie",
+    "jsessionid": "your_jsessionid_cookie"
+  }
+}
+```
 
 ## Usage
 
-### From OpenClaw
-```
-Use linkedin-scout to find Staff ML Engineer roles in San Francisco
-```
-
-### Direct Command
+### Basic Usage
 ```bash
 cd skills/linkedin-scout
-node scrape.js --keywords "Staff Machine Learning Engineer" --location "San Francisco Bay Area"
+node scrape.js --keywords "Machine Learning Engineer"
+```
+
+### Options
+```bash
+# Limit number of jobs to process
+node scrape.js --keywords "ML Engineer" --max-jd 10
+
+# Set location
+node scrape.js --keywords "ML Engineer" --location "San Francisco Bay Area"
+
+# Save to file
+node scrape.js --keywords "ML Engineer" --output data/jobs.json
+
+# Filter by experience level (4 = senior, 5 = director)
+node scrape.js --keywords "ML Engineer" --experience 4
+
+# Filter by work type (1 = onsite, 2 = remote, 3 = hybrid)
+node scrape.js --keywords "ML Engineer" --work-type 2
 ```
 
 ## Output Format
@@ -38,29 +60,45 @@ node scrape.js --keywords "Staff Machine Learning Engineer" --location "San Fran
 ```json
 {
   "source": "linkedin",
-  "job_id": "linkedin_uuid",
-  "company": "CZI",
-  "role_title": "Staff Machine Learning Engineer",
-  "location": "San Francisco, CA",
-  "application_url": "https://linkedin.com/jobs/view/...",
-  "job_description_raw": "Full JD text...",
-  "salary_range": "$250k - $350k",
-  "posted_date": "2026-03-06",
-  "easy_apply": false,
-  "detected_signals": ["virtual_cell", "foundation_models"],
-  "scraped_at": "2026-03-07T04:05:00Z"
+  "job_id": "linkedin_1234567890",
+  "company": "Pinterest",
+  "role_title": "Sr. Staff Machine Learning Engineer, Homefeed",
+  "location": "United States (Remote)",
+  "application_url": "https://www.linkedin.com/jobs/view/4275256717/",
+  "job_description_raw": "About Pinterest... What You'll Do...",
+  "salary_range": "$227,871—$469,147 USD",
+  "posted_date": null,
+  "job_type": "FTE",
+  "detected_signals": ["recsys", "foundation_models"],
+  "scraped_at": "2026-03-11T14:00:00Z"
 }
 ```
+
+## Detected Signals
+
+The scraper automatically detects the following signals in job descriptions:
+
+- **recsys**: Recommendation systems
+- **two_stage_ranking**: Two-stage ranking
+- **genrec**: Generative recommendation
+- **foundation_models**: LLMs, transformers
+- **virtual_cell**: Virtual cell / cellular biology
+- **drug_discovery**: Drug discovery
+- **bio_ai**: Computational biology
+- **ml_platform**: ML platform / infrastructure
+- **feature_store**: Feature store
+- **ml_pipeline**: ML pipelines
+- **voice_agent**: Voice AI agents
+- **cx_automation**: Customer experience automation
 
 ## Error Handling
 
 | Error | Handling |
 |-------|----------|
-| Cookie expired | Send notification to update credentials |
-| Rate limited | Wait 60s, retry with reduced frequency |
-| No results | Return empty array, log search params |
+| Cookie expired | Exit with error to update credentials |
+| Rate limited | Exit with error |
+| No job cards found | Exit with error - LinkedIn may have blocked |
 
 ## Dependencies
 - playwright
-- dotenv
 - uuid

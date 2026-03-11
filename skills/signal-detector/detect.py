@@ -69,7 +69,7 @@ def get_llm_client(config):
     
     return openai.OpenAI(api_key=api_key)
 
-def detect_signals_with_llm(client, job_data, model="anthropic/claude-3.5-sonnet"):
+def detect_signals_with_llm(client, job_data, model="minimax/minimax-m2.5"):
     """Use LLM to detect signals from job description"""
     
     jd_text = job_data.get('job_description_raw', '') or job_data.get('raw_jd_text', '')
@@ -276,7 +276,7 @@ def main():
     parser.add_argument('--role', help='Role title')
     parser.add_argument('--jd', help='Job description text')
     parser.add_argument('--no-llm', action='store_true', help='Use keyword matching only (no LLM)')
-    parser.add_argument('--model', default='anthropic/claude-3.5-sonnet', help='LLM model to use')
+    parser.add_argument('--model', default='minimax/minimax-m2.5', help='LLM model to use')
     
     args = parser.parse_args()
     
