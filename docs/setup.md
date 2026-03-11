@@ -45,17 +45,17 @@ Required secrets:
 - **Notification webhook**: Discord or Telegram bot
 
 ### 2. Skill Implementations
-The skill directories currently only have README.md files. The actual scraping/analysis logic needs to be implemented:
+Some skills have actual implementations, others need work:
 
 | Skill | Status | Priority |
 |-------|--------|----------|
-| `linkedin-scout/` | README only | **High** |
-| `wellfound-scout/` | README only | High |
-| `signal-detector/` | README only | High |
-| `asset-generator/` | README only | High |
-| `company-research/` | Empty | Medium |
-| `career-page-scout/` | Empty | Medium |
-| `ats-scout/` | Empty | Low |
+| `linkedin-scout/` | ✅ IMPLEMENTED (scrape.js) | **High** |
+| `career-page-scout/` | ✅ IMPLEMENTED (scrape.js) | **High** |
+| `wellfound-scout/` | ❌ Not implemented | High |
+| `signal-detector/` | ❌ README only (no detect.py) | High |
+| `asset-generator/` | ❌ README only | High |
+| `company-research/` | ❌ Empty directory | Medium |
+| `ats-scout/` | ❌ Not implemented | Low |
 
 ### 3. OpenClaw Installation
 Following the setup guide in `docs/setup.md`:
@@ -91,8 +91,8 @@ Based on `openclaw.json`:
 
 | Time | Agent | Task |
 |------|-------|------|
-| 01:00 AM | Scout C2C | Find contract roles |
-| 01:30 AM | Analyst C2C | Score contract roles |
+| 01:00 AM | Scout C2C | Find contract roles (NOT CONFIGURED) |
+| 01:30 AM | Analyst C2C | Score contract roles (NOT CONFIGURED) |
 | 02:00 AM | Scout (FTE) | Find full-time roles |
 | 02:30 AM | Analyst (FTE) | Score full-time roles |
 | 03:00 AM | Strategist | Generate application packages |
@@ -120,7 +120,8 @@ You can test the pipeline with mock data:
 
 2. Run Analyst manually:
 ```bash
-openclaw agents run analyst --manual
+# Get job ID from openclaw cron list
+openclaw cron run <job-id>
 ```
 
 3. Check enriched output in `data/leads/enriched_leads.json`
@@ -130,7 +131,7 @@ openclaw agents run analyst --manual
 ## Next Steps
 
 1. **Immediate**: Fill in `config/secrets.json`
-2. **Before running**: Implement at least one skill (linkedin-scout recommended)
+2. **Before running**: Implement missing skills (wellfound-scout, signal-detector, asset-generator, company-research)
 3. **Verification**: Run dry test with mock data
 4. **Automation**: Set up full OpenClaw daemon
 

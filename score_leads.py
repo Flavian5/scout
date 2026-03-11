@@ -12,7 +12,9 @@ with open('config/persona.md', 'r') as f:
     persona_text = f.read()
 
 def score_lead(lead):
-    text = (lead.get('raw_jd_text', '') + ' ' + lead.get('role_title', '')).lower()
+    # Handle both field name variations
+    jd_text = lead.get('raw_jd_text') or lead.get('job_description_raw') or ''
+    text = (jd_text + ' ' + lead.get('role_title', '')).lower()
     
     # Check hard filters
     for filter_rule in criteria['filter_rules']['hard_no']:
@@ -63,7 +65,7 @@ def score_lead(lead):
         "role_title": lead['role_title'],
         "location": lead['location'],
         "application_url": lead['application_url'],
-        "raw_jd_text": lead['raw_jd_text'],
+        "raw_jd_text": jd_text,
         "detected_signals": list(set(detected_signals)),
         "category_scores": scores,
         "total_score": total_score,

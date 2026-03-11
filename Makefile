@@ -57,34 +57,37 @@ pdf-c2c:
 # ============================================
 
 # Run FTE Scout agent
+# Job ID: 4c717471-e359-4b8a-8920-24d33cd51ccc
 run-scout:
 	@echo "Running FTE Scout agent..."
-	openclaw agents run scout
+	openclaw cron run 4c717471-e359-4b8a-8920-24d33cd51ccc
 
-# Run C2C Scout agent
+# Run C2C Scout agent (not configured in cron yet)
 run-scout-c2c:
 	@echo "Running C2C Scout agent..."
-	openclaw agents run scout_c2c
+	@echo "ERROR: C2C Scout cron job not configured. Run 'openclaw cron add' to create it."
 
 # Run FTE Analyst agent
+# Job ID: 5e897123-557e-4a5c-866c-fa9cd93927e2
 run-analyst:
 	@echo "Running FTE Analyst agent..."
-	openclaw agents run analyst
+	openclaw cron run 5e897123-557e-4a5c-866c-fa9cd93927e2
 
-# Run C2C Analyst agent
+# Run C2C Analyst agent (not configured in cron yet)
 run-analyst-c2c:
 	@echo "Running C2C Analyst agent..."
-	openclaw agents run analyst_c2c
+	@echo "ERROR: C2C Analyst cron job not configured. Run 'openclaw cron add' to create it."
 
 # Run FTE Strategist agent
+# Job ID: e91b0b24-7704-41bb-8b50-fe9771b9acd7
 run-strategist:
 	@echo "Running FTE Strategist agent..."
-	openclaw agents run strategist
+	openclaw cron run e91b0b24-7704-41bb-8b50-fe9771b9acd7
 
-# Run C2C Strategist agent
+# Run C2C Strategist agent (not configured in cron yet)
 run-strategist-c2c:
 	@echo "Running C2C Strategist agent..."
-	openclaw agents run strategist_c2c
+	@echo "ERROR: C2C Strategist cron job not configured. Run 'openclaw cron add' to create it."
 
 # ============================================
 # Daily Run - Full Pipeline
@@ -93,17 +96,15 @@ run-strategist-c2c:
 # Run full daily pipeline (FTE)
 daily-run-fte:
 	@echo "=== Starting FTE Daily Run ==="
-	openclaw agents run scout
-	openclaw agents run analyst
-	openclaw agents run strategist
+	openclaw cron run 4c717471-e359-4b8a-8920-24d33cd51ccc
+	openclaw cron run 5e897123-557e-4a5c-866c-fa9cd93927e2
+	openclaw cron run e91b0b24-7704-41bb-8b50-fe9771b9acd7
 	@echo "=== FTE Daily Run Complete ==="
 
 # Run full daily pipeline (C2C)
 daily-run-c2c:
 	@echo "=== Starting C2C Daily Run ==="
-	openclaw agents run scout_c2c
-	openclaw agents run analyst_c2c
-	openclaw agents run strategist_c2c
+	@echo "ERROR: C2C cron jobs not configured. Run 'openclaw cron add' to create them."
 	@echo "=== C2C Daily Run Complete ==="
 
 # Run full daily pipeline (both FTE and C2C)
