@@ -118,6 +118,12 @@
       "company-research": {
         "enabled": true
       },
+      "tavily-search": {
+        "enabled": true,
+        "config": {
+          "api_key": "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"
+        }
+      },
       "career-page-scout": {
         "enabled": true
       },
