@@ -67,7 +67,7 @@ def load_config():
     return config
 
 # Model selection: Kimi K2.5 for analytical work, Minimax M2.5 for creative writing
-DEFAULT_ANALYTICAL_MODEL = "moonshot/kimi-k2.5"
+DEFAULT_ANALYTICAL_MODEL = "moonshotai/kimi-k2.5"
 DEFAULT_CREATIVE_MODEL = "minimax/minimax-m2.5"
 
 def get_llm_client(config):

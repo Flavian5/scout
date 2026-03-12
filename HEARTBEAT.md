@@ -1,1 +1,1 @@
-REMINDER: Run Scout agent for FTE job leads failed on 2026-03-11 13:05 EDT. Consider refreshing LinkedIn session or trying alternative sources. Do not disrupt user unless requested.
+REMINDER: Scout agent for FTE job leads failed again on 2026-03-12 02:00 EDT (Chrome CDP not running on port 9222). This has been failing since 2026-03-11 13:05. Needs Chrome launched with --remote-debugging-port=9222 before scrape can work. Do not disrupt user unless requested.

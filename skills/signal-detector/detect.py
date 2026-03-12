@@ -70,7 +70,7 @@ def get_llm_client(config):
     return openai.OpenAI(api_key=api_key)
 
 # Model selection: Kimi K2.5 for analytical work, Minimax M2.5 for fast/simple tasks
-DEFAULT_ANALYTICAL_MODEL = "moonshot/kimi-k2.5"
+DEFAULT_ANALYTICAL_MODEL = "moonshotai/kimi-k2.5"
 DEFAULT_FAST_MODEL = "minimax/minimax-m2.5"
 
 def detect_signals_with_llm(client, job_data, model=DEFAULT_ANALYTICAL_MODEL):
