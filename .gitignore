@@ -30,6 +30,11 @@ data/leads/*.json
 !data/leads/.gitkeep
 applications/*/
 
+# Browser profiles - contains cookies, history, and session data
+# Never commit this! Re-create by injecting cookies from secrets.json
+# Profile gets rate-limited by LinkedIn anyway, so it's ephemeral
+skills/linkedin-scout/linkedin-profile/
+
 # Node modules (if any skill implementations use Node)
 node_modules/
 
@@ -48,3 +53,5 @@ temp/
 
 # Vscode
 .vscode/
+
+skills/linkedin-scout/linkedin-profile/*
