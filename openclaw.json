@@ -10,6 +10,9 @@
       "sandbox": {
         "mode": "non-main"
       },
+      "model": {
+        "primary": "openrouter/minimax/minimax-m2.5" 
+      },
       "heartbeat": {
         "every": "24h",
         "at": "02:00"
@@ -49,7 +52,7 @@
         "data/cover_letter_base.md"
       ],
       "output_dir": "applications"
-    },
+    }
   },
   "skills": {
     "entries": {
