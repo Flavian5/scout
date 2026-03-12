@@ -66,6 +66,10 @@ def load_config():
     
     return config
 
+# Model selection: Kimi K2.5 for analytical work, Minimax M2.5 for creative writing
+DEFAULT_ANALYTICAL_MODEL = "moonshot/kimi-k2.5"
+DEFAULT_CREATIVE_MODEL = "minimax/minimax-m2.5"
+
 def get_llm_client(config):
     """Get LLM client"""
     if not openai:
@@ -132,7 +136,7 @@ Return ONLY the tailored CV in markdown format. Do not add explanations."""
 
     try:
         response = client.chat.completions.create(
-            model="minimax/minimax-m2.5",
+            model=DEFAULT_ANALYTICAL_MODEL,  # Kimi K2.5 for analytical CV tailoring
             messages=[
                 {"role": "system", "content": "You are an expert resume writer. Return only valid markdown CV."},
                 {"role": "user", "content": prompt}
@@ -191,7 +195,7 @@ Return ONLY the cover letter in markdown format."""
 
     try:
         response = client.chat.completions.create(
-            model="minimax/minimax-m2.5",
+            model=DEFAULT_CREATIVE_MODEL,  # Minimax M2.5 for creative cover letter writing
             messages=[
                 {"role": "system", "content": "You are an expert cover letter writer. Return only valid markdown."},
                 {"role": "user", "content": prompt}

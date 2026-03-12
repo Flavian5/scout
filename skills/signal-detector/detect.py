@@ -69,7 +69,11 @@ def get_llm_client(config):
     
     return openai.OpenAI(api_key=api_key)
 
-def detect_signals_with_llm(client, job_data, model="minimax/minimax-m2.5"):
+# Model selection: Kimi K2.5 for analytical work, Minimax M2.5 for fast/simple tasks
+DEFAULT_ANALYTICAL_MODEL = "moonshot/kimi-k2.5"
+DEFAULT_FAST_MODEL = "minimax/minimax-m2.5"
+
+def detect_signals_with_llm(client, job_data, model=DEFAULT_ANALYTICAL_MODEL):
     """Use LLM to detect signals from job description"""
     
     jd_text = job_data.get('job_description_raw', '') or job_data.get('raw_jd_text', '')
@@ -276,7 +280,7 @@ def main():
     parser.add_argument('--role', help='Role title')
     parser.add_argument('--jd', help='Job description text')
     parser.add_argument('--no-llm', action='store_true', help='Use keyword matching only (no LLM)')
-    parser.add_argument('--model', default='minimax/minimax-m2.5', help='LLM model to use')
+    parser.add_argument('--model', default=DEFAULT_ANALYTICAL_MODEL, help='LLM model to use')
     
     args = parser.parse_args()
     
