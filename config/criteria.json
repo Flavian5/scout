@@ -1,6 +1,6 @@
 {
-  "version": "2.0.0",
-  "description": "Scoring criteria for job role evaluation - balances comp, career impact, and technical alignment",
+  "version": "3.0.0",
+  "description": "Scoring criteria for job role evaluation - balances AI-centrality, resilience, comp, career impact, and technical alignment",
   "scoring_model": {
     "description": "Weighted scoring model for evaluating job opportunities against persona preferences",
     "max_score": 100,
@@ -8,8 +8,74 @@
     "high_priority_threshold": 85
   },
   "categories": {
+    "ai_criticality": {
+      "weight": 20,
+      "description": "How central AI/ML is to the company's product - product IS the model",
+      "signals": [
+        {
+          "name": "product_is_model",
+          "keywords": ["autonomous", "self-driving", "drug discovery", "foundation model", "LLM product", "generative AI product"],
+          "points": 25,
+          "notes": "Product IS the model - highest AI centrality"
+        },
+        {
+          "name": "ai_core_moat",
+          "keywords": ["perception", "computer vision", "recommendation engine", "recsys", "personalization engine", "generative recommendation"],
+          "points": 20,
+          "notes": "AI is the competitive moat"
+        },
+        {
+          "name": "ai_infrastructure",
+          "keywords": ["ML platform", "feature store", "model serving", "training infrastructure", "ML pipeline", "MLOps"],
+          "points": 15,
+          "notes": "Building AI infrastructure for others"
+        },
+        {
+          "name": "ai_research_lab",
+          "keywords": ["research scientist", "AI lab", "OpenAI", "DeepMind", "Anthropic", "researcher"],
+          "points": 18,
+          "notes": "Pure AI research organization"
+        }
+      ]
+    },
+    "resilience": {
+      "weight": 15,
+      "description": "Sector resilience - funding stability regardless of economic cycles",
+      "signals": [
+        {
+          "name": "defense_national_security",
+          "keywords": ["defense", "national security", "intelligence", "autonomous systems", "Palantir", "Anduril", "Lockheed", "military"],
+          "points": 25,
+          "notes": "Defense spending is counter-cyclical"
+        },
+        {
+          "name": "mandatory_compliance",
+          "keywords": ["tax", "regulatory", "compliance", "payroll", "accounting software", "turbotax"],
+          "points": 20,
+          "notes": "Mandatory software with high switching costs"
+        },
+        {
+          "name": "critical_infrastructure",
+          "keywords": ["grid", "energy", "power", "semiconductor", "manufacturing", "supply chain"],
+          "points": 20,
+          "notes": "Critical infrastructure - hard to cut"
+        },
+        {
+          "name": "healthcare_core",
+          "keywords": ["drug discovery", "clinical trials", "medical imaging", "hospital operations", "biotech", "pharma"],
+          "points": 18,
+          "notes": "Healthcare is structurally stable"
+        },
+        {
+          "name": "sticky_b2b",
+          "keywords": ["enterprise", "infrastructure", "platform", "B2B", "SaaS"],
+          "points": 12,
+          "notes": "Enterprise software has high retention"
+        }
+      ]
+    },
     "compensation": {
-      "weight": 40,
+      "weight": 25,
       "description": "Compensation package - base salary, equity, bonuses",
       "signals": [
         {
@@ -221,6 +287,44 @@
           "keywords": ["TN", "Canadian", "visa sponsorship"],
           "points": 5,
           "notes": "TN visa eligible"
+        }
+      ]
+    },
+    "level_alignment": {
+      "weight": 10,
+      "description": "Level matching based on company tier - Tier 1 accepts Senior, Tier 2+ requires Staff+",
+      "tier_rules": {
+        "tier1_ai_critical": {
+          "description": "AI-critical companies (defense autonomy, bio-AI, foundation labs)",
+          "accept_levels": ["Senior", "Staff", "Principal"],
+          "level_bonus": 5,
+          "target_companies": ["Anduril", "Shield AI", "Recursion", "Insitro", "OpenAI", "Anthropic", "Cohere", "Waymo", "Zoox", "Aurora", "CoreWeave", "Lambda Labs"]
+        },
+        "tier2_resilient": {
+          "description": "Resilient sectors (tax software, Palantir, CZI, enterprise)",
+          "required_level": "Staff",
+          "level_bonus": 0,
+          "target_companies": ["Intuit", "Palantir", "CZI", "Chan Zuckerberg", "Salesforce", "ServiceNow"]
+        },
+        "tier3_other": {
+          "description": "Other resilient but not AI-critical (banks, energy)",
+          "required_level": "Staff",
+          "level_penalty": -5,
+          "target_companies": ["Capital One", "JPMorgan", "Goldman", "Shell", "BP", "Exxon"]
+        }
+      },
+      "signals": [
+        {
+          "name": "senior_level",
+          "keywords": ["Senior", "Staff", "Principal", "Lead"],
+          "points": 10,
+          "notes": "Senior-level role or above"
+        },
+        {
+          "name": "staff_level",
+          "keywords": ["Staff", "Principal"],
+          "points": 15,
+          "notes": "Staff or Principal level"
         }
       ]
     }

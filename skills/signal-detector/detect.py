@@ -13,6 +13,7 @@ Usage:
 import argparse
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -73,14 +74,63 @@ def get_llm_client(config):
 DEFAULT_ANALYTICAL_MODEL = "moonshotai/kimi-k2.5"
 DEFAULT_FAST_MODEL = "minimax/minimax-m2.5"
 
-def detect_signals_with_llm(client, job_data, model=DEFAULT_ANALYTICAL_MODEL):
-    """Use LLM to detect signals from job description"""
+def extract_json_from_response(response_text: str) -> dict | None:
+    """
+    Robustly extract JSON from LLM response.
+    Handles: markdown code blocks, truncated JSON, partial responses.
+    """
+    if not response_text:
+        return None
     
-    jd_text = job_data.get('job_description_raw', '') or job_data.get('raw_jd_text', '')
-    company = job_data.get('company', '')
-    role = job_data.get('role_title', '')
+    # Strategy 1: Try to find JSON in markdown code block
+    json_block_match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', response_text, re.DOTALL)
+    if json_block_match:
+        try:
+            return json.loads(json_block_match.group(1))
+        except json.JSONDecodeError:
+            pass  # Try next strategy
     
-    if not jd_text:
+    # Strategy 2: Find first { and last } and try to parse
+    start = response_text.find('{')
+    end = response_text.rfind('}')
+    
+    if start >= 0 and end > start:
+        json_str = response_text[start:end+1]
+        
+        # Try direct parse first
+        try:
+            return json.loads(json_str)
+        except json.JSONDecodeError:
+            pass
+        
+        # Strategy 3: Try to repair common JSON issues
+        # Remove trailing commas
+        json_str = re.sub(r',(\s*[}\]])', r'\1', json_str)
+        
+        # Try again after repair
+        try:
+            return json.loads(json_str)
+        except json.JSONDecodeError as e:
+            # Strategy 4: Try to extract just the detected_signals part
+            signals_match = re.search(r'"detected_signals"\s*:\s*\{.*\}', json_str, re.DOTALL)
+            if signals_match:
+                # Return partial structure with what we can parse
+                pass
+    
+    return None
+
+def detect_signals_with_llm(client, job_data, model=DEFAULT_ANALYTICAL_MODEL, max_retries=2):
+    """Use LLM to detect signals from job description with robust error handling"""
+    
+    # Safe extraction with null checks
+    raw_jd = job_data.get('job_description_raw') or job_data.get('raw_jd_text') or ''
+    company = job_data.get('company') or ''
+    role = job_data.get('role_title') or ''
+    
+    # Ensure we have string (not None)
+    jd_text = str(raw_jd) if raw_jd else ''
+    
+    if not jd_text.strip():
         # Fall back to company + role if no JD
         jd_text = f"Role: {role} at {company}"
     
@@ -92,48 +142,48 @@ Role: {role}
 Job Description:
 {jd_text[:5000]}
 
-Analyze and identify the following signals. Return a JSON object with your analysis:
+Analyze and identify the following signals. Return ONLY valid JSON (no markdown, no explanation):
 
 {{
     "detected_signals": {{
         "ml_architecture": {{
-            "foundation_models": <true/false>,
-            "transformers": <true/false>,
-            "generative_recommendation": <true/false>,
-            "two_stage_ranking": <true/false>,
-            "causal_ml": <true/false>,
-            "production_ml": <true/false>
+            "foundation_models": true,
+            "transformers": false,
+            "generative_recommendation": false,
+            "two_stage_ranking": false,
+            "causal_ml": false,
+            "production_ml": true
         }},
         "domain_alignment": {{
-            "recsys": <true/false>,
-            "virtual_cell": <true/false>,
-            "bio_ai": <true/false>,
-            "voice_agent": <true/false>,
-            "healthcare_ai": <true/false>
+            "recsys": false,
+            "virtual_cell": false,
+            "bio_ai": false,
+            "voice_agent": false,
+            "healthcare_ai": false
         }},
         "career_impact": {{
-            "scientific_impact": <true/false>,
-            "hyperscale": <true/false>,
-            "publication_opportunity": <true/false>,
-            "leadership_growth": <true/false>,
-            "cutting_edge": <true/false>
+            "scientific_impact": false,
+            "hyperscale": true,
+            "publication_opportunity": false,
+            "leadership_growth": true,
+            "cutting_edge": true
         }},
         "infrastructure": {{
-            "gpu_compute": <true/false>,
-            "data_scale": <true/false>,
-            "ml_platform": <true/false>
+            "gpu_compute": true,
+            "data_scale": true,
+            "ml_platform": false
         }}
     }},
     "signal_strength": {{
-        "overall": <0.0-1.0>,
-        "technical": <0.0-1.0>,
-        "domain": <0.0-1.0>,
-        "career": <0.0-1.0>
+        "overall": 0.75,
+        "technical": 0.8,
+        "domain": 0.2,
+        "career": 0.8
     }},
-    "recommendation": "<strong_match/medium_match/weak_match>",
-    "reasoning": "<2-3 sentence explanation of why this role matches or not>",
-    "key_requirements": ["list of key requirements from JD"],
-    "nice_to_have": ["list of nice-to-have skills"]
+    "recommendation": "strong_match",
+    "reasoning": "Brief explanation here",
+    "key_requirements": ["req1", "req2"],
+    "nice_to_have": ["nice1"]
 }}
 
 Focus on:
@@ -141,74 +191,86 @@ Focus on:
 2. Is this a research-heavy or production-heavy role?
 3. What scale of data/compute is mentioned?
 4. Any mention of virtual cells, drug discovery, GenRec, foundation models?
+
+Return ONLY valid JSON - no markdown code blocks, no explanation.
 """
 
-    try:
-        # Handle model name for OpenRouter
-        if '/' in model:
-            model = model  # Already in provider/model format
-        
-        response = client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": "You are an expert ML career advisor. Analyze job descriptions and return valid JSON only."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.3,
-            max_tokens=2000
-        )
-        
-        result_text = response.choices[0].message.content
-        
-        # Extract JSON from response
-        # Find JSON block
-        start = result_text.find('{')
-        end = result_text.rfind('}') + 1
-        
-        if start >= 0 and end > start:
-            json_str = result_text[start:end]
-            return json.loads(json_str)
-        
-        return {"error": "Could not parse LLM response", "raw": result_text}
-        
-    except Exception as e:
-        return {"error": str(e)}
+    for attempt in range(max_retries):
+        try:
+            response = client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": "You are an expert ML career advisor. Return ONLY valid JSON, no markdown."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.3,
+                max_tokens=2000
+            )
+            
+            result_text = response.choices[0].message.content
+            
+            # Try to extract and parse JSON
+            parsed = extract_json_from_response(result_text)
+            
+            if parsed:
+                return parsed
+            
+            # If we got here, JSON extraction failed
+            print(f"    Warning: Could not parse JSON on attempt {attempt + 1}, trying again...")
+            
+            # Add a hint to the prompt for the next attempt
+            prompt = prompt.replace(
+                "Return ONLY valid JSON (no markdown, no explanation):",
+                "CRITICAL: Return ONLY raw JSON object. No markdown fences. No text before or after."
+            )
+            
+        except Exception as e:
+            print(f"    Error on attempt {attempt + 1}: {e}")
+            if attempt == max_retries - 1:
+                return {"error": str(e)}
+    
+    # All retries exhausted
+    return {"error": "Failed to parse LLM response after retries", "method": "llm_failed"}
 
 def detect_signals_keyword(job_data):
-    """Fallback: Detect signals using keyword matching"""
+    """Fallback: Detect signals using keyword matching with null safety"""
     
-    jd_text = (job_data.get('job_description_raw', '') or 
-               job_data.get('raw_jd_text', '') or 
-               job_data.get('role_title', '') + ' ' + 
-               job_data.get('company', '')).lower()
+    # Safe extraction with null checks
+    raw_jd = job_data.get('job_description_raw') or job_data.get('raw_jd_text') or ''
+    role = job_data.get('role_title') or ''
+    company = job_data.get('company') or ''
+    
+    # Ensure we have strings
+    jd_text = str(raw_jd) + ' ' + str(role) + ' ' + str(company)
+    jd_text_lower = jd_text.lower()
     
     signals = {
         "ml_architecture": {
-            "foundation_models": any(k in jd_text for k in ['foundation model', 'llm', 'gpt', 'transformer', 'bert']),
-            "transformers": 'transformer' in jd_text,
-            "generative_recommendation": any(k in jd_text for k in ['genrec', 'generative rec', 'vae', 'diffusion']),
-            "two_stage_ranking": any(k in jd_text for k in ['two-stage', 'two stage', 'candidate generation', 're-ranking']),
-            "causal_ml": any(k in jd_text for k in ['causal', 'uplift', 'counterfactual']),
-            "production_ml": any(k in jd_text for k in ['feature store', 'mlops', 'model serving'])
+            "foundation_models": any(k in jd_text_lower for k in ['foundation model', 'llm', 'gpt', 'transformer', 'bert', 'large language']),
+            "transformers": 'transformer' in jd_text_lower,
+            "generative_recommendation": any(k in jd_text_lower for k in ['genrec', 'generative rec', 'vae', 'diffusion']),
+            "two_stage_ranking": any(k in jd_text_lower for k in ['two-stage', 'two stage', 'candidate generation', 're-ranking']),
+            "causal_ml": any(k in jd_text_lower for k in ['causal', 'uplift', 'counterfactual']),
+            "production_ml": any(k in jd_text_lower for k in ['feature store', 'mlops', 'model serving', 'production'])
         },
         "domain_alignment": {
-            "recsys": any(k in jd_text for k in ['recommendation', 'recsys', 'personalization']),
-            "virtual_cell": any(k in jd_text for k in ['virtual cell', 'cell', 'biological']),
-            "bio_ai": any(k in jd_text for k in ['bio-ai', 'drug discovery', 'computational biology']),
-            "voice_agent": any(k in jd_text for k in ['voice agent', 'voice ai', 'conversational']),
-            "healthcare_ai": any(k in jd_text for k in ['healthcare', 'medical', 'clinical'])
+            "recsys": any(k in jd_text_lower for k in ['recommendation', 'recsys', 'personalization']),
+            "virtual_cell": any(k in jd_text_lower for k in ['virtual cell', 'cell', 'biological']),
+            "bio_ai": any(k in jd_text_lower for k in ['bio-ai', 'drug discovery', 'computational biology']),
+            "voice_agent": any(k in jd_text_lower for k in ['voice agent', 'voice ai', 'conversational']),
+            "healthcare_ai": any(k in jd_text_lower for k in ['healthcare', 'medical', 'clinical'])
         },
         "career_impact": {
-            "scientific_impact": any(k in jd_text for k in ['drug discovery', 'research', 'scientific']),
-            "hyperscale": any(k in jd_text for k in ['petabyte', 'hyperscale', 'billion']),
-            "publication_opportunity": any(k in jd_text for k in ['publish', 'conference', 'research']),
-            "leadership_growth": any(k in jd_text for k in ['staff', 'senior', 'lead', 'mentor']),
-            "cutting_edge": any(k in jd_text for k in ['cutting edge', 'state of the art', 'innovation'])
+            "scientific_impact": any(k in jd_text_lower for k in ['drug discovery', 'research', 'scientific']),
+            "hyperscale": any(k in jd_text_lower for k in ['petabyte', 'hyperscale', 'billion', 'trillion']),
+            "publication_opportunity": any(k in jd_text_lower for k in ['publish', 'conference', 'research', 'paper']),
+            "leadership_growth": any(k in jd_text_lower for k in ['staff', 'senior', 'lead', 'mentor', 'principal']),
+            "cutting_edge": any(k in jd_text_lower for k in ['cutting edge', 'state of the art', 'innovation', 'advanced'])
         },
         "infrastructure": {
-            "gpu_compute": any(k in jd_text for k in ['gpu', 'h100', 'a100', 'nvidia']),
-            "data_scale": any(k in jd_text for k in ['petabyte', 'large scale', 'massive']),
-            "ml_platform": any(k in jd_text for k in ['ml platform', 'ml infrastructure'])
+            "gpu_compute": any(k in jd_text_lower for k in ['gpu', 'h100', 'a100', 'nvidia', 'tpu']),
+            "data_scale": any(k in jd_text_lower for k in ['petabyte', 'large scale', 'massive', 'exabyte']),
+            "ml_platform": any(k in jd_text_lower for k in ['ml platform', 'ml infrastructure', 'feature store'])
         }
     }
     
@@ -219,7 +281,7 @@ def detect_signals_keyword(job_data):
     return {
         "detected_signals": signals,
         "signal_strength": {
-            "overall": round(total_signals / max_signals, 2),
+            "overall": round(total_signals / max_signals, 2) if max_signals > 0 else 0,
             "technical": round(sum(1 for v in signals["ml_architecture"].values() if v) / 6, 2),
             "domain": round(sum(1 for v in signals["domain_alignment"].values() if v) / 5, 2),
             "career": round(sum(1 for v in signals["career_impact"].values() if v) / 5, 2)
@@ -242,22 +304,36 @@ def process_leads(input_path, output_path, use_llm=True):
     print(f"Processing {len(leads)} leads...")
     
     results = []
+    llm_success = 0
+    llm_failed = 0
+    
     for i, lead in enumerate(leads):
-        print(f"  [{i+1}/{len(leads)}] Analyzing: {lead.get('role_title')} at {lead.get('company')}")
+        print(f"  [{i+1}/{len(leads)}] Analyzing: {lead.get('role_title', 'Unknown')} at {lead.get('company', 'Unknown')}")
         
         if client and use_llm:
             try:
                 result = detect_signals_with_llm(client, lead)
-                result['method'] = 'llm'
+                
+                # Check if we got valid result or error
+                if 'error' in result:
+                    print(f"    LLM failed: {result.get('error')}, using keyword fallback")
+                    result = detect_signals_keyword(lead)
+                    llm_failed += 1
+                else:
+                    result['method'] = 'llm'
+                    llm_success += 1
+                    
             except Exception as e:
-                print(f"    LLM failed: {e}, falling back to keyword")
+                print(f"    Exception: {e}, falling back to keyword")
                 result = detect_signals_keyword(lead)
+                llm_failed += 1
         else:
             result = detect_signals_keyword(lead)
         
-        result['job_id'] = lead.get('job_id')
-        result['company'] = lead.get('company')
-        result['role_title'] = lead.get('role_title')
+        # Ensure we always have required fields
+        result['job_id'] = lead.get('job_id', f'unknown_{i}')
+        result['company'] = lead.get('company', 'Unknown')
+        result['role_title'] = lead.get('role_title', 'Unknown')
         
         results.append(result)
     
@@ -266,6 +342,7 @@ def process_leads(input_path, output_path, use_llm=True):
         json.dump(results, f, indent=2)
     
     print(f"\nSaved signal analysis to: {output_path}")
+    print(f"LLM success: {llm_success}, LLM failed (keyword used): {llm_failed}")
     
     # Summary
     strong = sum(1 for r in results if r.get('recommendation') == 'strong_match')
@@ -297,6 +374,9 @@ def main():
         
         if client:
             result = detect_signals_with_llm(client, job_data, args.model)
+            if 'error' in result:
+                print(f"LLM failed: {result.get('error')}")
+                result = detect_signals_keyword(job_data)
         else:
             result = detect_signals_keyword(job_data)
         

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frank Meng - ML Engineer CV</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2c5282;
+            --accent-color: #3182ce;
+            --text-dark: #1a202c;
+            --text-medium: #4a5568;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: var(--text-dark);
+            background: white;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+        }
+
+        /* Header */
+        header {
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+
+        .name {
+            font-size: 24pt;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .title {
+            font-size: 14pt;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 12px;
+        }
+
+        .contact-info {
+            font-size: 10pt;
+            color: var(--text-medium);
+        }
+
+        .contact-info a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .contact-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 24px;
+        }
+
+        .badges {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 9pt;
+            font-weight: 500;
+            color: var(--text-medium);
+        }
+
+        .badge.primary {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 13pt;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        h3 {
+            font-size: 11pt;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .company {
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .date {
+            font-size: 10pt;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        /* Summary */
+        .summary {
+            font-size: 10.5pt;
+            color: var(--text-medium);
+            line-height: 1.6;
+        }
+
+        .summary strong {
+            color: var(--text-dark);
+        }
+
+        /* Competencies */
+        .competencies-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .competency-category {
+            background: var(--bg-light);
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .competency-category h4 {
+            font-size: 10pt;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .competency-category ul {
+            list-style: none;
+            font-size: 9.5pt;
+        }
+
+        .competency-category li {
+            padding: 2px 0;
+            padding-left: 12px;
+            position: relative;
+        }
+
+        .competency-category li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+        }
+
+        /* Work Experience */
+        .job {
+            margin-bottom: 16px;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 6px;
+        }
+
+        .job-title-row {
+            display: flex;
+            gap: 8px;
+            align-items: baseline;
+        }
+
+        .job-achievements {
+            font-size: 9.5pt;
+            color: var(--text-medium);
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .job-achievements li {
+            padding: 2px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .job-achievements li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+            font-size: 9pt;
+        }
+
+        /* Technical Stack */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .tech-item {
+            display: flex;
+            font-size: 9.5pt;
+        }
+
+        .tech-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            min-width: 120px;
+        }
+
+        .tech-value {
+            color: var(--text-medium);
+        }
+
+        /* Key Achievements */
+        .achievements-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px 16px;
+            list-style: none;
+            font-size: 9.5pt;
+        }
+
+        .achievements-list li {
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .achievements-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        /* Engagement Details */
+        .engagement-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .engagement-box {
+            background: var(--bg-light);
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .engagement-box h4 {
+            font-size: 10pt;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .engagement-box table {
+            width: 100%;
+            font-size: 9.5pt;
+            border-collapse: collapse;
+        }
+
+        .engagement-box td {
+            padding: 3px 0;
+        }
+
+        .engagement-box td:first-child {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .engagement-box td:last-child {
+            color: var(--text-medium);
+        }
+
+        /* Ideal Engagements */
+        .ideal-engagements {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px 16px;
+            font-size: 9.5pt;
+        }
+
+        .ideal-engagement-item {
+            display: flex;
+            gap: 8px;
+        }
+
+        .ideal-engagement-item strong {
+            color: var(--primary-color);
+            min-width: 80px;
+        }
+
+        /* Contact Footer */
+        .contact-footer {
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+            margin-top: 20px;
+            font-size: 10pt;
+            color: var(--text-medium);
+        }
+
+        .contact-footer strong {
+            color: var(--primary-color);
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+
+            .competencies-grid,
+            .engagement-grid {
+                gap: 12px;
+            }
+
+            .competency-category,
+            .engagement-box {
+                break-inside: avoid;
+            }
+
+            h2 {
+                break-after: avoid;
+            }
+
+            .job {
+                break-inside: avoid;
+            }
+        }
+
+        /* Page break helper */
+        .page-break {
+            page-break-before: always;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="name">Frank Meng</div>
+        <div class="title">ML Engineer | Data Pipeline & Production ML Specialist | Available Immediately</div>
+        <div class="contact-info">
+            <div class="contact-row">
+                <span>Toronto, Canada</span>
+                <span><a href="mailto:hao.c.meng@gmail.com">hao.c.meng@gmail.com</a></span>
+                <span>+1 647-335-8875</span>
+            </div>
+            <div class="contact-row">
+                <span>LinkedIn: <a href="https://linkedin.com/in/frankhmeng">linkedin.com/in/frankhmeng</a></span>
+                <span>GitHub: <a href="https://github.com/Flavian5">github.com/Flavian5</a></span>
+            </div>
+            <div class="badges">
+                <span class="badge primary">TN Visa Eligible (Canadian Citizen)</span>
+                <span class="badge">PST Hours</span>
+                <span class="badge">Up to 30 hrs/week</span>
+                <span class="badge">Flexible: Onsite (Week 1) → Remote, or Full Remote</span>
+            </div>
+        </div>
+    </header>
+
+    <section>
+        <h2>Professional Summary</h2>
+        <p class="summary">
+            Staff-level ML Engineer with 10+ years of experience building production ML systems at hyperscale (Twitter/X) and leading ML platform initiatives. Proven track record delivering <strong>data pipelines, production ML systems, and prototype-to-production</strong> implementations. Rare expertise in Generative Recommendation (GenRec) systems for advanced client needs. <strong>Available for Q2 engagements</strong> — can start immediately to help clients hit Q3/Q4 deadlines.
+        </p>
+    </section>
+
+    <section>
+        <h2>Core Competencies</h2>
+        <div class="competencies-grid">
+            <div class="competency-category">
+                <h4>Production ML & Data Engineering</h4>
+                <ul>
+                    <li>Data Pipeline Engineering: Built and scaled ETL/ML training pipelines to 1PB/hour</li>
+                    <li>ML Platform Development: Feature stores (Feast), model serving, real-time inference</li>
+                    <li>Production Scaling: 10,000+ parallel instances, >10,000 RPM</li>
+                    <li>Prototype-to-Production: MVPs to production systems, A/B testing, monitoring</li>
+                </ul>
+            </div>
+            <div class="competency-category">
+                <h4>Recommendation Systems & Ranking</h4>
+                <ul>
+                    <li>Two-Stage Ranking Architecture: Candidate generation + heavy re-ranking pipelines</li>
+                    <li>Learned Sparse Embeddings: Dense retrieval, sparse lexical matching, hybrid approaches</li>
+                    <li>Real-Time Feature Stores: Feature engineering at scale, online/offline consistency</li>
+                </ul>
+            </div>
+            <div class="competency-category">
+                <h4>Generative Recommendation (GenRec) — Premium Differentiator</h4>
+                <ul>
+                    <li>Semantic ID: RQ-VAE and Rotation-based approaches</li>
+                    <li>Steerable LLM Recsys Hybrid: Synthetic data generation with LLMs</li>
+                    <li>VAEs, Diffusion Models: For recommendation diversity and exploration</li>
+                </ul>
+            </div>
+            <div class="competency-category">
+                <h4>MLOps & Infrastructure</h4>
+                <ul>
+                    <li>Cloud Infrastructure: Kubernetes, Spark, Airflow, GCP, Azure</li>
+                    <li>Cost Optimization: $5M/month infrastructure savings verified</li>
+                    <li>MLOps: CI/CD, monitoring, observability at scale</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Work Experience</h2>
+
+        <div class="job">
+            <div class="job-header">
+                <div class="job-title-row">
+                    <h3>Independent Consultant (RussellAI)</h3>
+                    <span class="date">| July 2023 – Present | Toronto, Canada</span>
+                </div>
+            </div>
+            <ul class="job-achievements">
+                <li><strong>Generative Recommendation (GenRec) — Differentiated Expertise:</strong> Research and development on GenRec systems using VAEs and diffusion models; Flow-based generative models for recommendation diversity; Hybrid recommendation combining learned sparse embeddings with generative approaches; Semantic ID generation using RQ-VAE and Rotation-based approaches</li>
+                <li><strong>Voice AI Agent Development:</strong> Built and scaled voice AI agent system to 10,000+ parallel instances; Achieved RPM (requests per minute) exceeding 10,000; GPT-4 based agent architecture for conversational AI</li>
+            </ul>
+        </div>
+
+        <div class="job">
+            <div class="job-header">
+                <div class="job-title-row">
+                    <h3>Providence Digital Innovation Group</h3>
+                    <span class="date">| Senior ML Engineer (June 2023 – July 2025)</span>
+                </div>
+            </div>
+            <div style="font-size: 9.5pt; color: var(--text-light); margin-bottom: 6px;">Operating with Staff-level scope | Toronto, Canada</div>
+            <ul class="job-achievements">
+                <li><strong>"Grace" Patient-Facing Medical AI:</strong> Designed, coded, built, and scaled core data platform and pipelines for LLM analytics, compliance, and large-scale annotation; Critical infrastructure supporting LLM training/evaluation efficiency</li>
+                <li><strong>AI Safety System Implementation:</strong> Developed real-time, NIST-compliant AI safety system with novel control/interjection mechanisms; Built "TestGPT" testing platform for LLM evaluation</li>
+                <li><strong>Leadership:</strong> Operated with Staff-level scope, driving architectural decisions across ML platform; Mentored junior engineers on ML best practices and production systems</li>
+            </ul>
+        </div>
+
+        <div class="job">
+            <div class="job-header">
+                <div class="job-title-row">
+                    <h3>Twitter (X)</h3>
+                    <span class="date">| Machine Learning Engineer (Jan 2022 – Nov 2022)</span>
+                </div>
+            </div>
+            <div style="font-size: 9.5pt; color: var(--text-light); margin-bottom: 6px;">Toronto, Canada</div>
+            <ul class="job-achievements">
+                <li><strong>Hyperscale ML Infrastructure:</strong> Scaled real-time ML training data pipeline to handle <strong>1 Petabyte/hour</strong>, achieving 5x increase in processing capacity for global operations; Optimized offline/online skew in distributed ML training systems; Reduced feature hydration latency through pipeline optimization</li>
+                <li><strong>Cloud Cost Optimization:</strong> Re-architected and optimized critical ETL and feature hydration pipelines; Verified cloud infrastructure cost savings of <strong>$5M/month</strong></li>
+            </ul>
+        </div>
+
+        <div class="job">
+            <div class="job-header">
+                <div class="job-title-row">
+                    <h3>Craft.co</h3>
+                    <span class="date">| Lead ML Engineer (Dec 2020 – Oct 2021)</span>
+                </div>
+            </div>
+            <div style="font-size: 9.5pt; color: var(--text-light); margin-bottom: 6px;">Toronto, Canada (Remote)</div>
+            <ul class="job-achievements">
+                <li><strong>NLP Automation:</strong> Developed and deployed BERT-based news categorization system; Reduced manual analyst workload by <strong>40%</strong></li>
+                <li><strong>Data & ML Strategy:</strong> Established company's data and ML roadmap; Built real-time inference pipelines for production ML services</li>
+            </ul>
+        </div>
+
+        <div class="job">
+            <div class="job-header">
+                <div class="job-title-row">
+                    <h3>Senso.ai</h3>
+                    <span class="date">| Lead ML Engineer (May 2018 – Sep 2020)</span>
+                </div>
+            </div>
+            <ul class="job-achievements">
+                <li><strong>Predictive Modeling:</strong> Designed and deployed mortgage retention prediction models; Achieved <strong>20% lift in adjusted F1 score</strong> for retention prediction</li>
+                <li><strong>MLOps & Data Infrastructure:</strong> Built scalable MLOps data lake on GCP using Pub/Sub, BigQuery, and PySpark</li>
+            </ul>
+        </div>
+
+        <div class="job">
+            <div class="job-header">
+                <div class="job-title-row">
+                    <h3>HiredHippo</h3>
+                    <span class="date">| CTO (Jan 2016 – Apr 2018)</span>
+                </div>
+            </div>
+            <ul class="job-achievements">
+                <li><strong>NLP-Driven Matching:</strong> Developed NLP-based job recommendation system; Improved successful match rates by <strong>50%</strong></li>
+                <li><strong>Product Development:</strong> Built and launched AI-powered job search engine with integrated chatbot; Managed 5-person engineering team</li>
+            </ul>
+        </div>
+
+        <div class="job">
+            <div class="job-header">
+                <div class="job-title-row">
+                    <h3>Capital One</h3>
+                    <span class="date">| Statistician (Sep 2012 – Aug 2015)</span>
+                </div>
+            </div>
+            <div style="font-size: 9.5pt; color: var(--text-light); margin-bottom: 6px;">Toronto, Canada</div>
+            <ul class="job-achievements">
+                <li><strong>Risk Management & Credit Decisions:</strong> Developed and deployed statistical models for risk management and credit decisions</li>
+                <li><strong>Causal Inference:</strong> Built causal inference models for treatment effect estimation; Delivered quantifiable improvements to predictive accuracy and business metrics</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>Technical Stack</h2>
+        <div class="tech-grid">
+            <div class="tech-item">
+                <span class="tech-label">ML Frameworks:</span>
+                <span class="tech-value">PyTorch, TensorFlow, Keras, Scikit-learn, Hugging Face Transformers, LangChain</span>
+            </div>
+            <div class="tech-item">
+                <span class="tech-label">Recommendation:</span>
+                <span class="tech-value">Two-stage ranking, Learned sparse embeddings, VAEs, Diffusion models</span>
+            </div>
+            <div class="tech-item">
+                <span class="tech-label">Infrastructure:</span>
+                <span class="tech-value">Kubernetes, Spark, Airflow, Feast, Weaviate, GCP, Azure</span>
+            </div>
+            <div class="tech-item">
+                <span class="tech-label">Languages:</span>
+                <span class="tech-value">Python, SQL, Scala, Ruby</span>
+            </div>
+            <div class="tech-item">
+                <span class="tech-label">MLOps Tools:</span>
+                <span class="tech-value">Docker, Kubernetes, Terraform, CI/CD (Jenkins, Git), MLflow, Prometheus, Grafana</span>
+            </div>
+            <div class="tech-item">
+                <span class="tech-label">Vector & Search:</span>
+                <span class="tech-value">Weaviate, Elasticsearch, Faiss, Pinecone</span>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Key Achievements</h2>
+        <ul class="achievements-list">
+            <li><strong>$5M/month</strong> cloud cost savings through ETL pipeline re-architecture at Twitter</li>
+            <li><strong>1PB/hour</strong> data pipeline scaling for ML training infrastructure</li>
+            <li><strong>20% F1 score</strong> improvement in mortgage retention prediction models</li>
+            <li><strong>40% reduction</strong> in manual analyst workload through NLP automation</li>
+            <li><strong>50% improvement</strong> in job matching rates with NLP recommendation system</li>
+            <li><strong>10,000+ parallel instances</strong> voice AI system with >10,000 RPM</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Engagement Details</h2>
+        <div class="engagement-grid">
+            <div class="engagement-box">
+                <h4>Availability</h4>
+                <table>
+                    <tr><td>Start Date</td><td>Immediate</td></tr>
+                    <tr><td>Location</td><td>Toronto, Canada (PST Hours)</td></tr>
+                    <tr><td>Availability</td><td>Up to 30 hrs/week</td></tr>
+                    <tr><td>Engagement</td><td>3-12 months</td></tr>
+                    <tr><td>Visa</td><td>TN-eligible for US roles</td></tr>
+                </table>
+            </div>
+            <div class="engagement-box">
+                <h4>Rate Range (USD)</h4>
+                <table>
+                    <tr><td>ML/Data Engineering</td><td>$130-150/hr</td></tr>
+                    <tr><td>AI/ML Architect</td><td>$150-170/hr</td></tr>
+                    <tr><td>Principal/LLM Expert</td><td>$180-220/hr</td></tr>
+                    <tr><td>Monthly Retainer (80-120 hrs)</td><td>Available</td></tr>
+                </table>
+            </div>
+        </div>
+        <div style="margin-top: 12px;">
+            <h4 style="font-size: 10pt; color: var(--primary-color); margin-bottom: 8px;">Ideal Client Engagements</h4>
+            <div class="ideal-engagements">
+                <div class="ideal-engagement-item"><strong>Data Pipeline Engineering</strong><span>— ETL, feature stores, real-time streaming</span></div>
+                <div class="ideal-engagement-item"><strong>ML Platform Modernization</strong><span>— Feature stores, model serving, MLOps</span></div>
+                <div class="ideal-engagement-item"><strong>Production Scaling</strong><span>— MVP to production, A/B testing, monitoring</span></div>
+                <div class="ideal-engagement-item"><strong>RecSys Implementation</strong><span>— Two-stage ranking, embeddings, re-ranking</span></div>
+                <div class="ideal-engagement-item"><strong>GenRec Development</strong><span>— VAE/diffusion-based recommendation (premium)</span></div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="contact-footer">
+        <strong>Contact:</strong> hao.c.meng@gmail.com | +1 647-335-8875 | linkedin.com/in/frankhmeng | github.com/Flavian5 | Toronto, Canada (PST Hours | TN-eligible)
+        <br><em>Available for Q2 engagements. Ready to help clients hit Q3/Q4 deadlines.</em>
+    </footer>
+</body>
+</html>

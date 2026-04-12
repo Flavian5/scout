@@ -21,10 +21,11 @@ const fs = require('fs');
 const path = require('path');
 
 // Default configuration
-const DEFAULT_MAX_JOBS = 15;
+const DEFAULT_MAX_JOBS = 50;
 
-// Secrets path
+// Paths
 const SECRETS_PATH = path.join(__dirname, '..', '..', 'config', 'secrets.json');
+const COOKIES_PATH = path.join(__dirname, 'cookies.json');
 
 /**
  * Load secrets from config/secrets.json
@@ -39,6 +40,36 @@ function loadSecrets() {
     console.error('Warning: Could not load secrets.json:', e.message);
   }
   return null;
+}
+
+/**
+ * Save cookies to file for persistence
+ */
+function saveCookies(context) {
+  try {
+    const cookies = context.cookies();
+    fs.writeFileSync(COOKIES_PATH, JSON.stringify(cookies, null, 2));
+    console.error('Cookies saved to:', COOKIES_PATH);
+  } catch (e) {
+    console.error('Warning: Could not save cookies:', e.message);
+  }
+}
+
+/**
+ * Load cookies from file if available
+ */
+async function loadSavedCookies(context) {
+  try {
+    if (fs.existsSync(COOKIES_PATH)) {
+      const cookies = JSON.parse(fs.readFileSync(COOKIES_PATH, 'utf8'));
+      await context.addCookies(cookies);
+      console.error('Loaded saved cookies from:', COOKIES_PATH);
+      return true;
+    }
+  } catch (e) {
+    console.error('Warning: Could not load saved cookies:', e.message);
+  }
+  return false;
 }
 
 /**
@@ -180,29 +211,76 @@ async function scrape() {
   console.error(`Scraping LinkedIn recommended jobs...`);
   console.error(`Max jobs to process: ${config.maxJobs}`);
   
-  // Connect to existing Chrome via CDP (must start Chrome with --remote-debugging-port=9222)
-  console.error('Connecting to existing Chrome via CDP...');
-  const browser = await chromium.connectOverCDP('http://localhost:9222');
+  // Try to connect to existing Chrome first, otherwise launch fresh browser
+  let browser;
+  let page;
+  let context;
+  try {
+    console.error('Trying to connect to existing Chrome via CDP...');
+    browser = await chromium.connectOverCDP('http://localhost:9222');
+    context = browser.contexts()[0];
+    const pages = context.pages();
+    page = pages.length > 0 ? pages[0] : await context.newPage();
+    console.error('Connected to existing Chrome');
+  } catch (e) {
+    console.error('Could not connect to existing Chrome, launching fresh browser...');
+    // Launch fresh browser with cookies
+    browser = await chromium.launch({
+      headless: false,
+      args: ['--disable-blink-features=AutomationControlled']
+    });
+    
+    context = await browser.newContext({
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    });
+    
+    // Set LinkedIn cookies - try saved cookies first, then fall back to secrets
+    let cookiesLoaded = await loadSavedCookies(context);
+    
+    if (!cookiesLoaded && secrets?.linkedin?.li_at) {
+      // Use cookies from secrets.json
+      await context.addCookies([
+        {
+          name: 'li_at',
+          value: secrets.linkedin.li_at,
+          domain: '.linkedin.com',
+          path: '/',
+          httpOnly: true,
+          secure: true,
+          sameSite: 'None'
+        },
+        {
+          name: 'jsessionid',
+          value: secrets.linkedin.jsessionid,
+          domain: '.linkedin.com',
+          path: '/',
+          httpOnly: true,
+          secure: true,
+          sameSite: 'None'
+        }
+      ]);
+      console.error('Using cookies from secrets.json');
+    }
+    
+    page = await context.newPage();
+    console.error('Launched fresh browser with session cookies');
+  }
   
-  // Get the default context
-  const context = browser.contexts()[0];
-  const pages = context.pages();
-  const page = pages.length > 0 ? pages[0] : await context.newPage();
-  
-  console.error('Connected to existing Chrome - using your logged-in session');
-  
-  // Go straight to recommended jobs (skip feed)
-  console.error('Navigating directly to recommended jobs...');
+  // Go to recommended jobs with location and date filters
+  console.error('Navigating to recommended jobs with filters...');
   await randomDelay(1500, 2500);
   await humanMouseMovement(page);
   
+  // URL for recommended jobs (no time filter - higher quality)
+  const jobsUrl = 'https://www.linkedin.com/jobs/collections/recommended/';
+  
   try {
-    await page.goto('https://www.linkedin.com/jobs/collections/recommended/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.goto(jobsUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
   } catch (e) {
     console.error('Warning: Initial navigation failed, retrying...');
     await page.goto('https://www.linkedin.com/jobs/', { waitUntil: 'domcontentloaded', timeout: 60000 });
     await randomDelay(2000, 4000);
-    await page.goto('https://www.linkedin.com/jobs/collections/recommended/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+    await page.goto(jobsUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
   }
   
   await randomDelay(4000, 6000);
@@ -213,41 +291,165 @@ async function scrape() {
   
   if (currentUrl.includes('/login') || currentUrl.includes('authwall')) {
     console.error('Error: Not logged in. Cookies may be invalid or expired.');
+    console.error('Please update li_at and jsessionid in config/secrets.json');
     await browser.close();
     process.exit(1);
   }
+  
+  // Save cookies after successful login for next run
+  console.error('Saving cookies for future runs...');
+  saveCookies(context);
   
   // Debug: check page content
   console.error('Debug: Checking page content...');
   const bodyText = await page.evaluate(() => document.body.innerText);
   console.error('Page body text (first 500 chars):', bodyText.substring(0, 500));
   
-  // Scroll to load more jobs
-  console.error('Scrolling to load more jobs...');
-  for (let scroll = 0; scroll < 3; scroll++) {
-    await page.evaluate(() => window.scrollBy(0, 500));
-    await randomDelay(1500, 2500);
+  // Collect all job cards across multiple pages
+  const allJobCards = [];
+  let currentPage = 1;
+  const maxPages = 10; // Allow up to 10 pages for 200+ jobs
+  
+  while (allJobCards.length < config.maxJobs && currentPage <= maxPages) {
+    console.error(`\n=== Page ${currentPage} ===`);
+    
+    // Scroll the sidebar to load more jobs on current page
+    console.error('Scrolling sidebar to load more jobs...');
+    
+    let previousJobCount = 0;
+    let noChangeCount = 0;
+    const maxScrolls = 20;
+    
+    for (let scroll = 0; scroll < maxScrolls; scroll++) {
+      // Method 1: Use mouse wheel for more realistic scrolling
+      // First hover over the scroll container area
+      await page.mouse.move(400, 300 + (scroll * 100));
+      await page.mouse.wheel(0, 1000);
+      
+      // Method 2: Also try scrolling last job card into view
+      const lastCard = await page.locator('div[data-job-id]').last();
+      const isVisible = await lastCard.isVisible().catch(() => false);
+      if (isVisible) {
+        await lastCard.scrollIntoViewIfNeeded();
+      }
+      
+      // Method 3: Fallback to JavaScript scrollTop (more reliable than scrollBy)
+      await page.evaluate(() => {
+        const sentinel = document.querySelector('[data-results-list-top-scroll-sentinel]');
+        const scrollContainer = sentinel?.nextElementSibling;
+        if (scrollContainer) {
+          scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        }
+      });
+      // Longer delay to let content load (more human-like)
+      await randomDelay(3000, 5000);
+      
+      // Check current job count - look for div[data-job-id] inside the scroll container
+      const currentCards = await page.evaluate(() => {
+        const sentinel = document.querySelector('[data-results-list-top-scroll-sentinel]');
+        const scrollContainer = sentinel?.nextElementSibling;
+        if (scrollContainer) {
+          const cards = scrollContainer.querySelectorAll('div[data-job-id]');
+          return cards.length;
+        }
+        // Fallback: look anywhere on page
+        return document.querySelectorAll('div[data-job-id]').length;
+      });
+      
+      console.error(`  Scroll ${scroll + 1}: Found ${currentCards} job cards...`);
+      
+      // Check if we've reached our target or stopped loading new jobs
+      if (currentCards >= config.maxJobs) {
+        console.error(`  Reached target of ${config.maxJobs} jobs!`);
+        break;
+      }
+      
+      // If count hasn't changed, increment noChange counter (more tolerance)
+      if (currentCards === previousJobCount) {
+        noChangeCount++;
+        if (noChangeCount >= 5) {
+          console.error(`  No more jobs to load on this page (${noChangeCount} scrolls without change)`);
+          break;
+        }
+      } else {
+        noChangeCount = 0;
+      }
+      
+      previousJobCount = currentCards;
+    }
+    
+    // Extract job cards from current page - use the correct structure
+    const jobCards = await page.evaluate(() => {
+      const sentinel = document.querySelector('[data-results-list-top-scroll-sentinel]');
+      const scrollContainer = sentinel?.nextElementSibling;
+      
+      let cards = [];
+      if (scrollContainer) {
+        cards = scrollContainer.querySelectorAll('div[data-job-id]');
+      }
+      
+      // Fallback: search anywhere
+      if (cards.length === 0) {
+        cards = document.querySelectorAll('div[data-job-id]');
+      }
+      
+      return Array.from(cards).map(card => ({
+        jobId: card.getAttribute('data-job-id'),
+        title: card.querySelector('.job-card-list__title--link')?.textContent?.trim() || 
+               card.querySelector('a[href*="/jobs/view/"]')?.textContent?.trim() || '',
+        company: card.querySelector('.artdeco-entity-lockup__subtitle')?.textContent?.trim() || '',
+        location: card.querySelector('.job-card-container__metadata-wrapper')?.textContent?.trim() || ''
+      }));
+    });
+    
+    console.error(`Found ${jobCards.length} job cards on page ${currentPage}`);
+    
+    // Add unique jobs to our collection
+    const existingIds = new Set(allJobCards.map(j => j.jobId));
+    for (const card of jobCards) {
+      if (!existingIds.has(card.jobId)) {
+        allJobCards.push(card);
+        existingIds.add(card.jobId);
+      }
+    }
+    
+    console.error(`Total unique jobs collected: ${allJobCards.length}`);
+    
+    // Check if we have enough jobs
+    if (allJobCards.length >= config.maxJobs) {
+      console.error(`Reached target of ${config.maxJobs} jobs!`);
+      break;
+    }
+    
+    // Try to go to next page
+    console.error('Checking for next page...');
+    const hasNextPage = await page.evaluate(() => {
+      const nextBtn = document.querySelector('.jobs-search-pagination__button--next');
+      return nextBtn && !nextBtn.disabled;
+    });
+    
+    if (hasNextPage) {
+      console.error('Clicking next page...');
+      try {
+        await humanMouseMovement(page);
+        await randomDelay(2000, 4000);
+        await page.click('.jobs-search-pagination__button--next');
+        // Longer wait for page to load (more human-like)
+        await randomDelay(5000, 8000);
+        currentPage++;
+      } catch (e) {
+        console.error(`  Could not click next: ${e.message}`);
+        break;
+      }
+    } else {
+      console.error('No more pages available');
+      break;
+    }
   }
   
-  // Extract job cards
-  const jobCards = await page.evaluate(() => {
-    let cards = document.querySelectorAll('div[data-job-id]');
-    if (cards.length === 0) cards = document.querySelectorAll('.job-card-container');
-    if (cards.length === 0) cards = document.querySelectorAll('.jobs-recommended-list__item');
-    if (cards.length === 0) cards = document.querySelectorAll('.jobs-search-results__list-item');
-    
-    return Array.from(cards).map(card => ({
-      jobId: card.getAttribute('data-job-id') || card.id || Math.random().toString(36).substr(2, 9),
-      title: card.querySelector('.job-card-list__title--link')?.textContent?.trim() || 
-             card.querySelector('.job-card-container__title-text')?.textContent?.trim() ||
-             card.querySelector('a[href*="/jobs/view/"]')?.getAttribute('aria-label') || '',
-      company: card.querySelector('.artdeco-entity-lockup__subtitle')?.textContent?.trim() || 
-               card.querySelector('.job-card-container__company-name')?.textContent?.trim() || '',
-      location: card.querySelector('.job-card-container__metadata-wrapper')?.textContent?.trim() || ''
-    }));
-  });
+  const jobCards = allJobCards;
   
-  console.error(`Found ${jobCards.length} job cards in sidebar`);
+  console.error(`Found ${jobCards.length} total unique job cards`);
   
   if (jobCards.length === 0) {
     console.error('Error: No jobs found. Try different keywords or location.');
@@ -261,15 +463,29 @@ async function scrape() {
   // Click each job card and extract JD
   for (let i = 0; i < maxJobs; i++) {
     const card = jobCards[i];
+    
+    // Skip cards with no title
+    if (!card.title) {
+      console.error(`[${i+1}/${maxJobs}] Skipping - no title`);
+      continue;
+    }
+    
     console.error(`[${i+1}/${maxJobs}] Clicking: ${card.title} at ${card.company}`);
     
     try {
+      // More human-like: move mouse and pause before clicking
       await humanMouseMovement(page);
-      await randomDelay(500, 1000);
+      await randomDelay(2000, 4000);
       
-      await page.click(`div[data-job-id="${card.jobId}"]`);
+      // Try different click selectors
+      try {
+        await page.click(`div[data-job-id="${card.jobId}"]`);
+      } catch (e) {
+        await page.click(`.job-card-container:has-text("${card.company}")`);
+      }
       
-      await randomDelay(3000, 5000);
+      // Wait longer for JD panel to load
+      await randomDelay(4000, 6000);
       
       try {
         await page.waitForSelector('.jobs-description__content, #job-details, .jobs-box__html-content', { timeout: 5000 });

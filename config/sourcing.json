@@ -4,8 +4,8 @@
   "last_updated": "2026-03-09",
   "search_keywords": {
     "primary": [
-      "Senior Machine Learning Engineer",
       "Staff Machine Learning Engineer",
+      "Machine Learning Engineer",
       "ML Platform Engineer",
       "Recommendation Systems Engineer"
     ],
@@ -264,8 +264,9 @@
   },
   "search_parameters": {
     "recency_days": 7,
+    "job_limit": 200,
     "location_filter": ["San Francisco", "Bay Area", "Seattle", "Remote", "San Jose", "Palo Alto"],
-    "experience_level": ["Senior", "Staff", "Lead"],
+    "experience_level": ["Staff", "Lead"],
     "salary_minimum": 250000,
     "equity_include": true
   },
