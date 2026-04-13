@@ -8,6 +8,8 @@ Quick checks to run periodically. Keep this small!
 - [ ] Check calendar for upcoming events (next 24h)
 - [ ] Any new Linear notifications?
 
+**Note:** Heartbeat no longer checks job pipeline (scout/analyst/strategist deprecated and archived).
+
 ## Scout Status (Last: 2026-04-12)
 
 ### ✅ Phase 1: Infrastructure Migration (Complete)
@@ -24,14 +26,16 @@ Quick checks to run periodically. Keep this small!
 - AGENTS.md: Added Communication Style section
 - TOOLS.md: Updated with integration configs
 
-### 🚧 Phase 3: Core Skills Setup (In Progress)
+### ✅ Phase 3: Core Skills Setup (Complete - 2026-04-12)
 - WhatsApp MCP: Connected (whatsapp-web.js)
 - Linear MCP: Connected (via environment)
 - Notion MCP: Connected (via environment)
 - Gmail: Needs OAuth2 setup
 - Google Calendar: Needs OAuth2 setup
 
-### Remaining Setup (Manual - requires user interaction)
-- Gmail OAuth2: Create credentials at console.cloud.google.com
-- Google Calendar OAuth2: Create credentials at console.cloud.google.com
-- WhatsApp: Session ready, needs periodic QR scan if expires
+### Phase 4: Feature Implementation (Pending)
+- Review remaining Linear tickets for next priorities
+- Gmail OAuth2 setup (manual - user interaction required)
+- Google Calendar OAuth2 setup (manual - user interaction required)
+
+**Last pushed:** 2026-04-12, commit ca5ab86 (Phase 3: Core Skills setup + TOOLS.md updates)

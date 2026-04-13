@@ -22,6 +22,7 @@
     "scout": {
       "enabled": false,
       "deprecated": true,
+      "archived": true,
       "schedule": "0 2 * * *",
       "input_files": [
         "config/sourcing.json",
@@ -35,6 +36,7 @@
     "analyst": {
       "enabled": false,
       "deprecated": true,
+      "archived": true,
       "schedule": "30 2 * * *",
       "input_files": [
         "data/leads/raw_leads.json",
@@ -48,6 +50,7 @@
     "strategist": {
       "enabled": false,
       "deprecated": true,
+      "archived": true,
       "schedule": "0 3 * * *",
       "input_files": [
         "data/leads/enriched_leads.json",

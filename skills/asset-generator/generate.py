@@ -66,9 +66,9 @@ def load_config():
     
     return config
 
-# Model selection: Kimi K2.5 for analytical work, Minimax M2.5 for creative writing
-DEFAULT_ANALYTICAL_MODEL = "moonshotai/kimi-k2.5"
-DEFAULT_CREATIVE_MODEL = "minimax/minimax-m2.5"
+# Model selection: Minimax M2.7 for all tasks (migrated from OpenRouter)
+DEFAULT_ANALYTICAL_MODEL = "minimax/minimax-m2.7"
+DEFAULT_CREATIVE_MODEL = "minimax/minimax-m2.7"
 
 def get_llm_client(config):
     """Get LLM client"""
@@ -80,19 +80,18 @@ def get_llm_client(config):
     llm_config = secrets.get('llm_api', {})
     
     api_key = llm_config.get('api_key') or os.environ.get('OPENAI_API_KEY')
-    provider = llm_config.get('provider', 'openrouter')
+    provider = llm_config.get('provider', 'minimax.io')
+    base_url = llm_config.get('base_url', 'https://api.minimax.io/v1')
     
     if not api_key:
         print("Warning: No LLM API key found", file=sys.stderr)
         return None
     
-    if provider == 'openrouter':
-        return openai.OpenAI(
-            api_key=api_key,
-            base_url="https://openrouter.ai/api/v1"
-        )
-    
-    return openai.OpenAI(api_key=api_key)
+    # Configure for minimax.io or other OpenAI-compatible providers
+    return openai.OpenAI(
+        api_key=api_key,
+        base_url=base_url
+    )
 
 def get_company_info(company_name, sourcing):
     """Get company info from sourcing config"""

@@ -59,6 +59,14 @@ Heartbeat picks tasks in priority order:
 3. Respect daily limits
 4. Skip blocked tickets
 
+### ⚠️ Deprecated: Job Search Pipeline
+The old scout → analyst → strategist pipeline is **archived**. These agents are disabled:
+- `scout` - job board scraping agent (archived)
+- `analyst` - lead enrichment agent (archived)  
+- `strategist` - application generation agent (archived)
+
+All task management now goes through Linear. No job application workflow.
+
 ## Integrations
 
 ### Minimax LLM
