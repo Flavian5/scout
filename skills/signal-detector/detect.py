@@ -15,17 +15,16 @@ import json
 import os
 import re
 import sys
+import requests
 from pathlib import Path
 
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-try:
-    import openai
-except ImportError:
-    openai = None
+# Model selection: Minimax M2.7 for all tasks (migrated from OpenRouter)
+DEFAULT_MODEL = "MiniMax-M2.7"
+DEFAULT_ENDPOINT = "https://api.minimax.io/v1/text/chatcompletion_v2"
 
-# Try to load from config
 def load_config():
     """Load configuration from config files"""
     config = {}
@@ -44,34 +43,74 @@ def load_config():
     
     return config
 
-def get_llm_client(config):
-    """Get LLM client from config - supports minimax.io and other OpenAI-compatible APIs"""
-    if not openai:
-        print("Error: openai package not installed", file=sys.stderr)
-        return None
-    
+def get_llm_config(config):
+    """Get LLM configuration from config"""
     secrets = config.get('secrets', {})
     llm_config = secrets.get('llm_api', {})
     
     api_key = llm_config.get('api_key') or os.environ.get('OPENAI_API_KEY')
-    provider = llm_config.get('provider', 'minimax.io')
-    base_url = llm_config.get('base_url', 'https://api.minimax.io/v1')
+    endpoint = llm_config.get('endpoint', DEFAULT_ENDPOINT)
+    model = llm_config.get('model', DEFAULT_MODEL)
     
     if not api_key:
         print("Warning: No LLM API key found", file=sys.stderr)
         return None
     
-    # Configure for minimax.io or other OpenAI-compatible providers
-    client = openai.OpenAI(
-        api_key=api_key,
-        base_url=base_url
-    )
-    
-    return client
+    return {
+        'api_key': api_key,
+        'endpoint': endpoint,
+        'model': model
+    }
 
-# Model selection: Minimax M2.7 for all tasks (migrated from OpenRouter)
-DEFAULT_ANALYTICAL_MODEL = "minimax/minimax-m2.7"
-DEFAULT_FAST_MODEL = "minimax/minimax-m2.7"
+def call_minimax_llm(api_key, endpoint, model, messages, temperature=0.3, max_tokens=2000):
+    """
+    Call minimax.io API using native REST format.
+    
+    Args:
+        api_key: Minimax API key
+        endpoint: Full API endpoint URL
+        model: Model name (e.g., "MiniMax-M2.7")
+        messages: List of message dicts with role and content
+        temperature: Sampling temperature
+        max_tokens: Maximum tokens to generate
+    
+    Returns:
+        Response text from the model
+    """
+    headers = {
+        'Authorization': f'Bearer {api_key}',
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        'model': model,
+        'messages': messages,
+        'stream': False,
+        'temperature': temperature,
+        'top_p': 0.95
+    }
+    
+    if max_tokens:
+        payload['max_tokens'] = max_tokens
+    
+    response = requests.post(endpoint, headers=headers, json=payload, timeout=60)
+    
+    if response.status_code != 200:
+        raise Exception(f"API error: {response.status_code} - {response.text}")
+    
+    result = response.json()
+    
+    # Extract message content from minimax response format
+    choices = result.get('choices', [])
+    if choices and len(choices) > 0:
+        return choices[0].get('message', {}).get('content', '')
+    
+    # Check for base_resp error
+    base_resp = result.get('base_resp', {})
+    if base_resp.get('status_code') != 0:
+        raise Exception(f"API error: {base_resp.get('status_msg', 'Unknown error')}")
+    
+    return ''
 
 def extract_json_from_response(response_text: str) -> dict | None:
     """
@@ -118,7 +157,7 @@ def extract_json_from_response(response_text: str) -> dict | None:
     
     return None
 
-def detect_signals_with_llm(client, job_data, model=DEFAULT_ANALYTICAL_MODEL, max_retries=2):
+def detect_signals_with_llm(llm_config, job_data, max_retries=2):
     """Use LLM to detect signals from job description with robust error handling"""
     
     # Safe extraction with null checks
@@ -194,19 +233,20 @@ Focus on:
 Return ONLY valid JSON - no markdown code blocks, no explanation.
 """
 
+    messages = [
+        {"role": "user", "content": prompt}
+    ]
+    
     for attempt in range(max_retries):
         try:
-            response = client.chat.completions.create(
-                model=model,
-                messages=[
-                    {"role": "system", "content": "You are an expert ML career advisor. Return ONLY valid JSON, no markdown."},
-                    {"role": "user", "content": prompt}
-                ],
+            result_text = call_minimax_llm(
+                llm_config['api_key'],
+                llm_config['endpoint'],
+                llm_config['model'],
+                messages,
                 temperature=0.3,
                 max_tokens=2000
             )
-            
-            result_text = response.choices[0].message.content
             
             # Try to extract and parse JSON
             parsed = extract_json_from_response(result_text)
@@ -222,6 +262,7 @@ Return ONLY valid JSON - no markdown code blocks, no explanation.
                 "Return ONLY valid JSON (no markdown, no explanation):",
                 "CRITICAL: Return ONLY raw JSON object. No markdown fences. No text before or after."
             )
+            messages = [{"role": "user", "content": prompt}]
             
         except Exception as e:
             print(f"    Error on attempt {attempt + 1}: {e}")
@@ -294,7 +335,7 @@ def process_leads(input_path, output_path, use_llm=True):
     """Process leads and detect signals"""
     
     config = load_config()
-    client = get_llm_client(config) if use_llm else None
+    llm_config = get_llm_config(config) if use_llm else None
     
     # Load leads
     with open(input_path) as f:
@@ -309,9 +350,9 @@ def process_leads(input_path, output_path, use_llm=True):
     for i, lead in enumerate(leads):
         print(f"  [{i+1}/{len(leads)}] Analyzing: {lead.get('role_title', 'Unknown')} at {lead.get('company', 'Unknown')}")
         
-        if client and use_llm:
+        if llm_config and use_llm:
             try:
-                result = detect_signals_with_llm(client, lead)
+                result = detect_signals_with_llm(llm_config, lead)
                 
                 # Check if we got valid result or error
                 if 'error' in result:
@@ -356,7 +397,7 @@ def main():
     parser.add_argument('--role', help='Role title')
     parser.add_argument('--jd', help='Job description text')
     parser.add_argument('--no-llm', action='store_true', help='Use keyword matching only (no LLM)')
-    parser.add_argument('--model', default=DEFAULT_ANALYTICAL_MODEL, help='LLM model to use')
+    parser.add_argument('--model', default=DEFAULT_MODEL, help='LLM model to use')
     
     args = parser.parse_args()
     
@@ -369,10 +410,10 @@ def main():
         }
         
         config = load_config()
-        client = get_llm_client(config) if not args.no_llm else None
+        llm_config = get_llm_config(config) if not args.no_llm else None
         
-        if client:
-            result = detect_signals_with_llm(client, job_data, args.model)
+        if llm_config:
+            result = detect_signals_with_llm(llm_config, job_data)
             if 'error' in result:
                 print(f"LLM failed: {result.get('error')}")
                 result = detect_signals_keyword(job_data)

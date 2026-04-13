@@ -16,19 +16,19 @@ import argparse
 import json
 import os
 import sys
+import requests
 from pathlib import Path
 from datetime import datetime
 
 # Add parent to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-try:
-    import openai
-except ImportError:
-    openai = None
-
 # Base path
 BASE_PATH = Path(__file__).parent.parent.parent
+
+# Model selection: Minimax M2.7 for all tasks (migrated from OpenRouter)
+DEFAULT_MODEL = "MiniMax-M2.7"
+DEFAULT_ENDPOINT = "https://api.minimax.io/v1/text/chatcompletion_v2"
 
 def load_config():
     """Load configuration files"""
@@ -66,32 +66,74 @@ def load_config():
     
     return config
 
-# Model selection: Minimax M2.7 for all tasks (migrated from OpenRouter)
-DEFAULT_ANALYTICAL_MODEL = "minimax/minimax-m2.7"
-DEFAULT_CREATIVE_MODEL = "minimax/minimax-m2.7"
-
-def get_llm_client(config):
-    """Get LLM client"""
-    if not openai:
-        print("Error: openai package not installed", file=sys.stderr)
-        return None
-    
+def get_llm_config(config):
+    """Get LLM configuration from config"""
     secrets = config.get('secrets', {})
     llm_config = secrets.get('llm_api', {})
     
     api_key = llm_config.get('api_key') or os.environ.get('OPENAI_API_KEY')
-    provider = llm_config.get('provider', 'minimax.io')
-    base_url = llm_config.get('base_url', 'https://api.minimax.io/v1')
+    endpoint = llm_config.get('endpoint', DEFAULT_ENDPOINT)
+    model = llm_config.get('model', DEFAULT_MODEL)
     
     if not api_key:
         print("Warning: No LLM API key found", file=sys.stderr)
         return None
     
-    # Configure for minimax.io or other OpenAI-compatible providers
-    return openai.OpenAI(
-        api_key=api_key,
-        base_url=base_url
-    )
+    return {
+        'api_key': api_key,
+        'endpoint': endpoint,
+        'model': model
+    }
+
+def call_minimax_llm(api_key, endpoint, model, messages, temperature=0.3, max_tokens=2000):
+    """
+    Call minimax.io API using native REST format.
+    
+    Args:
+        api_key: Minimax API key
+        endpoint: Full API endpoint URL
+        model: Model name (e.g., "MiniMax-M2.7")
+        messages: List of message dicts with role and content
+        temperature: Sampling temperature
+        max_tokens: Maximum tokens to generate
+    
+    Returns:
+        Response text from the model
+    """
+    headers = {
+        'Authorization': f'Bearer {api_key}',
+        'Content-Type': 'application/json'
+    }
+    
+    payload = {
+        'model': model,
+        'messages': messages,
+        'stream': False,
+        'temperature': temperature,
+        'top_p': 0.95
+    }
+    
+    if max_tokens:
+        payload['max_tokens'] = max_tokens
+    
+    response = requests.post(endpoint, headers=headers, json=payload, timeout=60)
+    
+    if response.status_code != 200:
+        raise Exception(f"API error: {response.status_code} - {response.text}")
+    
+    result = response.json()
+    
+    # Extract message content from minimax response format
+    choices = result.get('choices', [])
+    if choices and len(choices) > 0:
+        return choices[0].get('message', {}).get('content', '')
+    
+    # Check for base_resp error
+    base_resp = result.get('base_resp', {})
+    if base_resp.get('status_code') != 0:
+        raise Exception(f"API error: {base_resp.get('status_msg', 'Unknown error')}")
+    
+    return ''
 
 def get_company_info(company_name, sourcing):
     """Get company info from sourcing config"""
@@ -101,7 +143,7 @@ def get_company_info(company_name, sourcing):
                 return company
     return None
 
-def generate_tailored_cv(client, config, job_data, company_info):
+def generate_tailored_cv(llm_config, config, job_data, company_info):
     """Generate tailored CV for a specific job"""
     
     persona = config.get('persona', '')
@@ -133,23 +175,25 @@ Instructions:
 
 Return ONLY the tailored CV in markdown format. Do not add explanations."""
 
+    messages = [
+        {"role": "user", "content": prompt}
+    ]
+    
     try:
-        response = client.chat.completions.create(
-            model=DEFAULT_ANALYTICAL_MODEL,  # Kimi K2.5 for analytical CV tailoring
-            messages=[
-                {"role": "system", "content": "You are an expert resume writer. Return only valid markdown CV."},
-                {"role": "user", "content": prompt}
-            ],
+        result = call_minimax_llm(
+            llm_config['api_key'],
+            llm_config['endpoint'],
+            llm_config['model'],
+            messages,
             temperature=0.3,
             max_tokens=4000
         )
-        
-        return response.choices[0].message.content
+        return result
     except Exception as e:
         print(f"CV generation error: {e}", file=sys.stderr)
         return cv_template  # Fallback to original
 
-def generate_cover_letter(client, config, job_data, company_info):
+def generate_cover_letter(llm_config, config, job_data, company_info):
     """Generate tailored cover letter"""
     
     persona = config.get('persona', '')
@@ -192,23 +236,25 @@ Instructions:
 
 Return ONLY the cover letter in markdown format."""
 
+    messages = [
+        {"role": "user", "content": prompt}
+    ]
+    
     try:
-        response = client.chat.completions.create(
-            model=DEFAULT_CREATIVE_MODEL,  # Minimax M2.5 for creative cover letter writing
-            messages=[
-                {"role": "system", "content": "You are an expert cover letter writer. Return only valid markdown."},
-                {"role": "user", "content": prompt}
-            ],
+        result = call_minimax_llm(
+            llm_config['api_key'],
+            llm_config['endpoint'],
+            llm_config['model'],
+            messages,
             temperature=0.3,
             max_tokens=1500
         )
-        
-        return response.choices[0].message.content
+        return result
     except Exception as e:
         print(f"Cover letter generation error: {e}", file=sys.stderr)
         return cl_template
 
-def generate_assets_for_job(client, config, job_data, output_dir):
+def generate_assets_for_job(llm_config, config, job_data, output_dir):
     """Generate all assets for a single job"""
     
     company = job_data.get('company', 'unknown')
@@ -226,14 +272,14 @@ def generate_assets_for_job(client, config, job_data, output_dir):
     print(f"  Generating assets for {role} at {company}...")
     
     # Generate tailored CV
-    cv = generate_tailored_cv(client, config, job_data, company_info)
+    cv = generate_tailored_cv(llm_config, config, job_data, company_info)
     cv_file = company_dir / 'cv.md'
     with open(cv_file, 'w') as f:
         f.write(cv)
     print(f"    CV: {cv_file}")
     
     # Generate cover letter
-    cl = generate_cover_letter(client, config, job_data, company_info)
+    cl = generate_cover_letter(llm_config, config, job_data, company_info)
     cl_file = company_dir / 'cover_letter.md'
     with open(cl_file, 'w') as f:
         f.write(cl)
@@ -298,10 +344,10 @@ def process_leads(input_path, output_dir, top_n=3):
     """Process leads and generate assets for top jobs"""
     
     config = load_config()
-    client = get_llm_client(config)
+    llm_config = get_llm_config(config)
     
-    if not client:
-        print("Error: No LLM client available", file=sys.stderr)
+    if not llm_config:
+        print("Error: No LLM config available", file=sys.stderr)
         return
     
     # Load leads
@@ -324,7 +370,7 @@ def process_leads(input_path, output_dir, top_n=3):
     results = []
     for i, lead in enumerate(top_leads):
         print(f"\n[{i+1}/{len(top_leads)}] {lead.get('role_title')} at {lead.get('company')}")
-        result = generate_assets_for_job(client, config, lead, output_dir)
+        result = generate_assets_for_job(llm_config, config, lead, output_dir)
         results.append(result)
     
     # Save summary
@@ -353,10 +399,10 @@ def main():
     args = parser.parse_args()
     
     config = load_config()
-    client = get_llm_client(config)
+    llm_config = get_llm_config(config)
     
-    if not client:
-        print("Error: No LLM client available. Check config/secrets.json")
+    if not llm_config:
+        print("Error: No LLM config available. Check config/secrets.json")
         sys.exit(1)
     
     # Single job mode
@@ -372,7 +418,7 @@ def main():
         sourcing = config.get('sourcing', {})
         company_info = get_company_info(args.company, sourcing)
         
-        generate_assets_for_job(client, config, job_data, output_dir)
+        generate_assets_for_job(llm_config, config, job_data, output_dir)
         return
     
     # Batch mode from leads

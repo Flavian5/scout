@@ -11,8 +11,9 @@
         "mode": "non-main"
       },
       "model": {
-        "primary": "minimax/minimax-m2.7",
-        "base_url": "https://api.minimax.io/v1"
+        "primary": "MiniMax-M2.7",
+        "base_url": "https://api.minimax.io/v1",
+        "endpoint": "https://api.minimax.io/v1/text/chatcompletion_v2"
       },
       "heartbeat": {
         "every": "30m",
@@ -79,9 +80,9 @@
       "signal-detector": {
         "enabled": true,
         "config": {
-          "model": "minimax/minimax-m2.7",
+          "model": "MiniMax-M2.7",
           "provider": "minimax.io",
-          "base_url": "https://api.minimax.io/v1"
+          "endpoint": "https://api.minimax.io/v1/text/chatcompletion_v2"
         }
       },
       "asset-generator": {
