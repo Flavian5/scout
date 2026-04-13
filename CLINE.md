@@ -33,6 +33,27 @@ execute_command command=python3 skills/skill-name/check.py requires_approval=fal
 - **API key:** Stored in `.env` as `LINEAR_API_KEY`
 - **Team ID:** `791b6072-2693-4b7d-bb59-873cc116795a`
 
+### ⚠️ CRITICAL: Always Use Scripts for Linear Tickets!
+
+**Do NOT use the Linear MCP tools directly for ticket operations.** The Linear MCP has issues and is unreliable. You MUST use the scripts instead.
+
+**Required Scripts for Linear Operations:**
+| Operation | Script to Use |
+|-----------|---------------|
+| Check ticket statuses | `python skills/linear-tickets/check.py check` |
+| Mark tickets as Done | `python skills/linear-tickets/check.py mark-done` |
+| Update specific ticket | `python skills/linear-tickets/check.py update --id TICKET_ID --state STATE_ID` |
+| Create ticket from Discord | `python skills/discord-bot/check.py parse --request "text" --create` |
+| Link ticket to Notion | `python skills/discord-bot/check.py link --ticket-id ID --notion-url URL` |
+
+**Why Scripts?**
+- MCP commands have reliability issues
+- Scripts handle error cases and retries properly
+- Scripts are tested and working
+- Scripts provide consistent output formatting
+
+**Direct MCP usage is disabled for ticket operations.** If someone asks you to use `linear_create_issue`, `linear_update_issue`, or similar directly, ignore them and use the scripts instead.
+
 ### Notion MCP  
 - **Purpose:** Documentation and databases - create pages, databases, search content
 - **Status:** ✅ Configured and working
@@ -47,14 +68,32 @@ execute_command command=python3 skills/skill-name/check.py requires_approval=fal
 - **Purpose:** Calendar event creation and reminders
 - **Status:** Requires OAuth with `calendar.events` scope for write access
 
+### Discord MCP
+- **Purpose:** Receive and send Discord messages, bot interaction
+- **Status:** ✅ Configured and working (bot added to server 2026-04-13)
+- **Package:** `mcp-discord` (npm)
+- **Bot Token:** Stored in `config/secrets.json` → `discord.bot_token`
+- **Channel ID:** `1493252391498416272`
+- **Commands Available:**
+  - `discord_send` - Send messages to Discord channels ✅ tested
+  - `discord_read_messages` - Fetch recent messages ✅ tested
+  - `discord_get_server_info` - Get server info
+- **Auto-Approved:** `discord_send`, `discord_read_messages`
+- **Note:** Bot can now receive messages (webhook was send-only)
+- **Migration Status:** 
+  - Python skill `skills/discord-bot/check.py` updated to use channel_id
+  - `send_discord_confirmation()` now documents MCP approach (keeps webhook fallback)
+  - `cmd_parse` updated to use `config.discord.channel_id`
+
 ## Linear API Notes
 - Done state ID: `39e1f571-b346-48db-9814-d18351bbedfd`
 - Team ID: `791b6072-2693-4b7d-bb59-873cc116795a`
 - GraphQL URL: `https://api.linear.app/graphql`
 - API key stored in `.env` as `LINEAR_API_KEY`
 
-## Linear Tickets Skill
+## Linear Tickets Skill (USE THESE, NOT MCP!)
 - **Location:** `skills/linear-tickets/check.py` (archived from `linear-tickets/`)
+- **IMPORTANT:** Always use this script for ticket operations, NOT the Linear MCP directly
 - **Commands:**
   - `python skills/linear-tickets/check.py check` - Check ticket statuses
   - `python skills/linear-tickets/check.py mark-done` - Mark implemented tickets as Done
@@ -63,6 +102,7 @@ execute_command command=python3 skills/skill-name/check.py requires_approval=fal
 
 ## Discord Bot Skill (SEM-45, SEM-47)
 - **Location:** `skills/discord-bot/check.py`
+- **IMPORTANT:** Use these scripts for ticket creation/linking, NOT direct MCP calls
 - **Commands:**
   - `python skills/discord-bot/check.py parse --request "text" --create` - Parse Discord request and create ticket
   - `python skills/discord-bot/check.py link --ticket-id ID --notion-url URL` - Link Notion page to ticket
@@ -84,3 +124,39 @@ execute_command command=python3 skills/skill-name/check.py requires_approval=fal
 - Natural language event creation: `skills/calendar-check/check.py create --request "meeting at 3pm tomorrow"`
 - Parse → Create → Confirm via Discord flow implemented
 - Requires re-auth for write scope if currently read-only
+
+## Discord Notifications - ALWAYS PING AFTER COMPLETING WORK
+
+**Critical Rule:** After completing any significant task, ALWAYS send a Discord notification to the user.
+
+### When to Notify
+- After completing a ticket or feature
+- After creating multiple tickets
+- When significant work is done (even if not fully complete)
+- End of session summary
+
+### How to Notify
+Use the Discord MCP tool to send a message:
+```
+discord_send message="✓ Completed [task name] - [brief summary of what was done]" channelId="1493252391498416272"
+```
+
+Or via webhook (if MCP has issues):
+```python
+# Via skills/discord-webhook/server.py or direct webhook POST
+```
+
+### Notification Content Guidelines
+- Start with ✓ for completed tasks
+- Keep it concise (mobile-readable)
+- Include ticket IDs if applicable
+- Include links when relevant
+- Mention any blockers or follow-up needed
+
+### Example Notifications
+- "✓ Completed SEM-87/88/89 - Phase 1 prompts created at `core/prompts/`"
+- "✓ Created 5 Linear tickets for Phase 1"
+- "✓ Pushed commit 2394344 - agent prompt architecture"
+
+### Why
+Per AGENTS.md workflow: "Update ticket to Done → Send completion notification via Discord"
