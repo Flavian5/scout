@@ -1,5 +1,5 @@
 # Secrets and sensitive configuration
-config/secrets.json
+config/*
 .env
 .env.local
 *.env

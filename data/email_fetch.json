@@ -1,0 +1,33 @@
+{
+  "emails": [
+    {
+      "id": "19d8793d23617dfa",
+      "sender": "The Second City <secondcitizens@secondcity.com>",
+      "subject": "World\u2019s Gone Wild and Audiences Love It",
+      "snippet": "Don&#39;t miss kids shows, Tuesday deals, and trivia nights To view this email as a web page, go here. &quot;Truly a must-see!&quot; - KV &quot;Super funny&quot; - Barbara &quot;World&#39;s Gone Wild",
+      "timestamp": "2026-04-13T12:00:53Z",
+      "urgency": "routine"
+    },
+    {
+      "id": "19d877be4e289cd4",
+      "sender": "ByteByteGo <bytebytego@substack.com>",
+      "subject": "How LinkedIn Feed Uses LLMs to Serve 1.3 Billion Users",
+      "snippet": "In this article, we will look at how the LinkedIn engineering team rebuilt the Feed and the challenges they faced. \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f",
+      "timestamp": "2026-04-13T11:31:29Z",
+      "urgency": "routine"
+    },
+    {
+      "id": "19d871317982690c",
+      "sender": "Starbucks Rewards <Starbucks@m.starbucks.com>",
+      "subject": "Week 2 of Star Days",
+      "snippet": "Aeroplan\u00ae members earn more during Star Days. \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f \u034f",
+      "timestamp": "2026-04-13T09:41:07Z",
+      "urgency": "routine"
+    }
+  ],
+  "summary": {
+    "urgent": 0,
+    "important": 0,
+    "routine": 3
+  }
+}
