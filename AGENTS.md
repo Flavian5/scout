@@ -28,7 +28,7 @@ All tasks follow the Linear-first workflow:
 1. **Create Ticket** → Any task request becomes a Linear ticket first
 2. **Execute** → Work from ticket description (has user story + tech specs)
 3. **Update Status** → Todo → In Progress → Done
-4. **Notify** → Send completion via WhatsApp
+4. **Notify** → Send completion via Discord
 
 ### Creating Tickets
 When you receive a task request:
@@ -38,7 +38,7 @@ When you receive a task request:
    - Description: User story + technical specs + acceptance criteria
    - Priority: Based on urgency keywords
    - Team: Semops
-3. Confirm creation to user via WhatsApp
+3. Confirm creation to user via Discord
 4. Execute the work
 5. Update ticket to In Progress
 6. Complete work
@@ -106,12 +106,13 @@ All task management now goes through Linear. No job application workflow.
 - **Scope**: Read/write events
 - **Sync**: 15-min reminder before meetings
 
-### WhatsApp
+### Discord (Notifications)
 - **Purpose**: Proactive notifications and user communication
-- **Access**: whatsapp-web.js (local session)
-- **Config**: `~/.openclaw/whatsapp-session/`
-- **Setup**: Initial QR code scan required
+- **Access**: Webhook (simple HTTP POST)
+- **Config**: `config/secrets.json` → `discord_webhook`
+- **Setup**: Create webhook in Discord server (Server Settings > Integrations > Webhooks)
 - **Messages**: Daily briefing, task notifications, reminders
+- **Status**: ✅ Working - abandoned WhatsApp due to QR code scanning issues
 
 ## Memory
 
@@ -217,7 +218,7 @@ Skills provide your tools. When you need one, check its `SKILL.md`. Keep local n
 
 **📝 Platform Formatting:**
 
-- **Discord/WhatsApp:** No markdown tables! Use bullet lists instead
+- **Discord:** No markdown tables! Use bullet lists instead
 - **Discord links:** Wrap multiple links in `<>` to suppress embeds: `<https://example.com>`
 - **WhatsApp:** No headers — use **bold** or CAPS for emphasis
 
@@ -314,7 +315,7 @@ Be direct and technical. Don't be conversational or use filler words.
 - Technical writing: explain the what and why, not just the what
 
 ### Platform Adaptation
-- **WhatsApp**: Short messages, no markdown tables, emojis for visual hierarchy
+- **WhatsApp**: Deprecated - use Discord instead
 - **Discord**: No embeds on links, use `<>` for multi-link messages
 - **Email**: Clear subject lines, professional but concise
 - **Linear**: Technical and detailed, include specs and acceptance criteria
