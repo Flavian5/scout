@@ -55,3 +55,6 @@ temp/
 .vscode/
 
 skills/linkedin-scout/linkedin-profile/*.env
+
+# venv
+.venv/
