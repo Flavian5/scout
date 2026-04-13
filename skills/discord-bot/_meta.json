@@ -1,0 +1,24 @@
+{
+  "name": "discord-bot",
+  "description": "Parse Discord requests to tickets and link Notion deliverables",
+  "category": "automation",
+  "commands": [
+    {
+      "name": "parse",
+      "description": "Parse Discord request to ticket (SEM-45)",
+      "example": "python skills/discord-bot/check.py parse --request \"create a ticket for updating my resume\""
+    },
+    {
+      "name": "link",
+      "description": "Link Notion page to Linear ticket (SEM-47)",
+      "example": "python skills/discord-bot/check.py link --ticket-id ID --notion-url URL"
+    },
+    {
+      "name": "create-deliverable",
+      "description": "Create Notion deliverable linked to ticket",
+      "example": "python skills/discord-bot/check.py create-deliverable --title \"My Task\" --database DB_ID --ticket-id TICKET_ID"
+    }
+  ],
+  "requires": ["LINEAR_API_KEY", "MINIMAX_API_KEY", "discord_webhook"],
+  "implements": ["SEM-45", "SEM-47"]
+}

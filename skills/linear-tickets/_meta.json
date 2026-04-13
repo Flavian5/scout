@@ -1,0 +1,27 @@
+{
+  "name": "linear-tickets",
+  "description": "Check and update Linear ticket statuses via GraphQL API",
+  "category": "task-management",
+  "commands": [
+    {
+      "name": "check",
+      "description": "Check ticket statuses",
+      "example": "python skills/linear-tickets/check.py check"
+    },
+    {
+      "name": "mark-done",
+      "description": "Mark implemented tickets as Done",
+      "example": "python skills/linear-tickets/check.py mark-done"
+    },
+    {
+      "name": "update",
+      "description": "Update a specific ticket",
+      "example": "python skills/linear-tickets/check.py update --id TICKET_ID --state STATE_ID"
+    }
+  ],
+  "requires": ["LINEAR_API_KEY"],
+  "maintains": [
+    "SEM-33", "SEM-34", "SEM-35", "SEM-36", "SEM-37", "SEM-38", "SEM-39", "SEM-40",
+    "SEM-27", "SEM-47", "SEM-49", "SEM-50", "SEM-52", "SEM-53"
+  ]
+}
