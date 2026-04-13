@@ -54,4 +54,4 @@ temp/
 # Vscode
 .vscode/
 
-skills/linkedin-scout/linkedin-profile/*
+skills/linkedin-scout/linkedin-profile/*.env
