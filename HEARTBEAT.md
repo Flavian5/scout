@@ -4,8 +4,10 @@ Quick checks to run periodically. Keep this small!
 
 ## Periodic Checks (2-4x daily)
 
+Priority order: P0 → P1 → P2 → P3
+
 - [ ] Check for urgent emails (`python skills/email-check/check.py --fetch --classify`)
-- [ ] Check calendar for upcoming events (next 24h)
+- [ ] Check calendar for upcoming events (`python skills/calendar-check/check.py --fetch --remind`)
 - [ ] Any new Linear notifications?
 
 **Note:** Heartbeat no longer checks job pipeline (scout/analyst/strategist deprecated and archived).

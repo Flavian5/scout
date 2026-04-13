@@ -1,0 +1,9 @@
+{
+  "name": "calendar-check",
+  "description": "Check Google Calendar for upcoming events and send meeting reminders via Discord",
+  "version": "1.0.0",
+  "author": "Scout Personal Assistant",
+  "created": "2026-04-13",
+  "priority": "P1",
+  "ticket": "SEM-24, SEM-25, SEM-26, SEM-27, SEM-28"
+}
