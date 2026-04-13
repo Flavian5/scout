@@ -4,7 +4,7 @@ Quick checks to run periodically. Keep this small!
 
 ## Periodic Checks (2-4x daily)
 
-- [ ] Check for urgent emails
+- [ ] Check for urgent emails (`python skills/email-check/check.py --fetch --classify`)
 - [ ] Check calendar for upcoming events (next 24h)
 - [ ] Any new Linear notifications?
 
@@ -33,7 +33,17 @@ Quick checks to run periodically. Keep this small!
 - Gmail: Needs OAuth2 setup
 - Google Calendar: Needs OAuth2 setup
 
-### Phase 4: Feature Implementation (Pending)
+### ✅ Phase 4: Email Monitoring (Complete - 2026-04-12)
+- Created `skills/email-check/` with full implementation:
+  - `check.py` - Gmail OAuth2 + fetch + urgency classification
+  - `SKILL.md` - Skill documentation
+  - `_meta.json` - Skill metadata
+  - `README.md` - Setup instructions
+- Email fetch: Uses Gmail API with OAuth2
+- Urgency classification: Uses MiniMax-M2.7 LLM
+- Placeholder stubs for WhatsApp alerts + Notion push (blocked on those skills)
+
+### Phase 5: Feature Implementation (Pending)
 - Review remaining Linear tickets for next priorities
 - Gmail OAuth2 setup (manual - user interaction required)
 - Google Calendar OAuth2 setup (manual - user interaction required)
