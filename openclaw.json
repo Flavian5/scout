@@ -19,63 +19,12 @@
         "every": "30m",
         "at": "00,30"
       }
-    },
-    "scout": {
-      "enabled": false,
-      "deprecated": true,
-      "archived": true,
-      "schedule": "0 2 * * *",
-      "input_files": [
-        "config/sourcing.json",
-        "config/criteria.json",
-        "config/persona.md"
-      ],
-      "output_files": [
-        "data/leads/raw_leads.json"
-      ]
-    },
-    "analyst": {
-      "enabled": false,
-      "deprecated": true,
-      "archived": true,
-      "schedule": "30 2 * * *",
-      "input_files": [
-        "data/leads/raw_leads.json",
-        "config/criteria.json",
-        "config/persona.md"
-      ],
-      "output_files": [
-        "data/leads/enriched_leads.json"
-      ]
-    },
-    "strategist": {
-      "enabled": false,
-      "deprecated": true,
-      "archived": true,
-      "schedule": "0 3 * * *",
-      "input_files": [
-        "data/leads/enriched_leads.json",
-        "config/persona.md",
-        "data/cv_base.md",
-        "data/cover_letter_base.md"
-      ],
-      "output_dir": "applications"
     }
   },
   "skills": {
     "entries": {
-      "linkedin-scout": {
-        "enabled": true,
-        "config": {
-          "requires_auth": true,
-          "cookies_path": "~/.openclaw/skills/linkedin-scout/cookies.json"
-        }
-      },
-      "wellfound-scout": {
-        "enabled": true,
-        "config": {
-          "requires_auth": false
-        }
+      "email-check": {
+        "enabled": true
       },
       "signal-detector": {
         "enabled": true,
@@ -85,27 +34,14 @@
           "endpoint": "https://api.minimax.io/v1/text/chatcompletion_v2"
         }
       },
-      "asset-generator": {
-        "enabled": true,
-        "config": {
-          "templates_dir": "data",
-          "output_dir": "applications"
-        }
-      },
-      "company-research": {
+      "ddg-web-search": {
         "enabled": true
       },
-      "tavily-search": {
+      "openclaw-tavily-search": {
         "enabled": true,
         "config": {
           "api_key": "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"
         }
-      },
-      "career-page-scout": {
-        "enabled": true
-      },
-      "ats-scout": {
-        "enabled": true
       }
     }
   },
@@ -124,17 +60,7 @@
   "secrets": {
     "path": "config/secrets.json",
     "required": [
-      "linkedin.li_at",
-      "linkedin.jsessionid",
       "llm_api.api_key"
     ]
-  },
-  "paths": {
-    "persona": "config/persona.md",
-    "sourcing": "config/sourcing.json",
-    "criteria": "config/criteria.json",
-    "leads": "data/leads",
-    "applications": "applications",
-    "templates": "data"
   }
 }

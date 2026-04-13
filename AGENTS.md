@@ -59,14 +59,6 @@ Heartbeat picks tasks in priority order:
 3. Respect daily limits
 4. Skip blocked tickets
 
-### ⚠️ Deprecated: Job Search Pipeline
-The old scout → analyst → strategist pipeline is **archived**. These agents are disabled:
-- `scout` - job board scraping agent (archived)
-- `analyst` - lead enrichment agent (archived)  
-- `strategist` - application generation agent (archived)
-
-All task management now goes through Linear. No job application workflow.
-
 ## Integrations
 
 ### Minimax LLM
@@ -220,7 +212,7 @@ Skills provide your tools. When you need one, check its `SKILL.md`. Keep local n
 
 - **Discord:** No markdown tables! Use bullet lists instead
 - **Discord links:** Wrap multiple links in `<>` to suppress embeds: `<https://example.com>`
-- **WhatsApp:** No headers — use **bold** or CAPS for emphasis
+- **WhatsApp:** Removed - using Discord for notifications instead
 
 ## 💓 Heartbeats - Be Proactive!
 
@@ -315,7 +307,7 @@ Be direct and technical. Don't be conversational or use filler words.
 - Technical writing: explain the what and why, not just the what
 
 ### Platform Adaptation
-- **WhatsApp**: Deprecated - use Discord instead
+- **WhatsApp**: Removed - using Discord for notifications instead
 - **Discord**: No embeds on links, use `<>` for multi-link messages
 - **Email**: Clear subject lines, professional but concise
 - **Linear**: Technical and detailed, include specs and acceptance criteria

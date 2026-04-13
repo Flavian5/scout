@@ -1,5 +1,0 @@
-# This directory stores job lead data
-# - raw_leads.json: Discovered jobs before filtering
-# - enriched_leads.json: Scored and enriched jobs (FTE)
-# - raw_leads_c2c.json: Discovered contract roles
-# - enriched_leads_c2c.json: Scored contract roles
