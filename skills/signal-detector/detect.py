@@ -45,7 +45,7 @@ def load_config():
     return config
 
 def get_llm_client(config):
-    """Get LLM client from config"""
+    """Get LLM client from config - supports minimax.io and other OpenAI-compatible APIs"""
     if not openai:
         print("Error: openai package not installed", file=sys.stderr)
         return None
@@ -54,25 +54,24 @@ def get_llm_client(config):
     llm_config = secrets.get('llm_api', {})
     
     api_key = llm_config.get('api_key') or os.environ.get('OPENAI_API_KEY')
-    provider = llm_config.get('provider', 'openrouter')
+    provider = llm_config.get('provider', 'minimax.io')
+    base_url = llm_config.get('base_url', 'https://api.minimax.io/v1')
     
     if not api_key:
         print("Warning: No LLM API key found", file=sys.stderr)
         return None
     
-    # Configure for OpenRouter
-    if provider == 'openrouter':
-        client = openai.OpenAI(
-            api_key=api_key,
-            base_url="https://openrouter.ai/api/v1"
-        )
-        return client
+    # Configure for minimax.io or other OpenAI-compatible providers
+    client = openai.OpenAI(
+        api_key=api_key,
+        base_url=base_url
+    )
     
-    return openai.OpenAI(api_key=api_key)
+    return client
 
-# Model selection: Kimi K2.5 for analytical work, Minimax M2.5 for fast/simple tasks
-DEFAULT_ANALYTICAL_MODEL = "moonshotai/kimi-k2.5"
-DEFAULT_FAST_MODEL = "minimax/minimax-m2.5"
+# Model selection: Minimax M2.7 for all tasks (migrated from OpenRouter)
+DEFAULT_ANALYTICAL_MODEL = "minimax/minimax-m2.7"
+DEFAULT_FAST_MODEL = "minimax/minimax-m2.7"
 
 def extract_json_from_response(response_text: str) -> dict | None:
     """

@@ -1,6 +1,6 @@
 {
-  "version": "2.0.0",
-  "description": "OpenClaw configuration for Autonomous Job Search Assistant",
+  "version": "3.0.0",
+  "description": "OpenClaw configuration for Scout Personal Assistant",
   "workspace": {
     "path": ".",
     "name": "scout"
@@ -11,15 +11,17 @@
         "mode": "non-main"
       },
       "model": {
-        "primary": "openrouter/minimax/minimax-m2.5" 
+        "primary": "minimax/minimax-m2.7",
+        "base_url": "https://api.minimax.io/v1"
       },
       "heartbeat": {
-        "every": "24h",
-        "at": "02:00"
+        "every": "30m",
+        "at": "00,30"
       }
     },
     "scout": {
-      "enabled": true,
+      "enabled": false,
+      "deprecated": true,
       "schedule": "0 2 * * *",
       "input_files": [
         "config/sourcing.json",
@@ -31,7 +33,8 @@
       ]
     },
     "analyst": {
-      "enabled": true,
+      "enabled": false,
+      "deprecated": true,
       "schedule": "30 2 * * *",
       "input_files": [
         "data/leads/raw_leads.json",
@@ -43,7 +46,8 @@
       ]
     },
     "strategist": {
-      "enabled": true,
+      "enabled": false,
+      "deprecated": true,
       "schedule": "0 3 * * *",
       "input_files": [
         "data/leads/enriched_leads.json",
@@ -72,8 +76,9 @@
       "signal-detector": {
         "enabled": true,
         "config": {
-          "model": "minimax/minimax-m2.5",
-          "provider": "openrouter"
+          "model": "minimax/minimax-m2.7",
+          "provider": "minimax.io",
+          "base_url": "https://api.minimax.io/v1"
         }
       },
       "asset-generator": {
