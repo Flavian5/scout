@@ -14,7 +14,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from daemon.service import get_daemon, DaemonService
+from daemon.service import DaemonService
 from daemon.registry import ToolResult
 
 logger = logging.getLogger(__name__)
@@ -40,14 +40,27 @@ class HealthResponse(BaseModel):
     tools: list[str]
 
 
-class DiscordMessageRequest(BaseModel):
-    """Incoming Discord message to process."""
-    channel_id: str
-    message_id: str
+class DiscordAuthor(BaseModel):
+    """Discord message author info."""
+    username: str
+    id: Optional[str] = None
+
+
+class DiscordEnvelope(BaseModel):
+    """Envelope format from discord-gateway."""
+    type: str
+    data: 'DiscordMessageData'
+
+
+class DiscordMessageData(BaseModel):
+    """Discord message data with camelCase from gateway."""
+    channelId: str
+    messageId: str
+    author: DiscordAuthor
     content: str
-    author: str
     timestamp: str
-    reply_to: Optional[str] = None
+    guildId: Optional[str] = None
+    isDirectMessage: bool = False
 
 
 class DiscordMessageResponse(BaseModel):
@@ -64,6 +77,11 @@ async def get_daemon_service() -> DaemonService:
     """Get or initialize the daemon service."""
     global _daemon
     if _daemon is None:
+        # Reset the global registry to ensure fresh state (lazy import to avoid module-level singleton)
+        from daemon.registry import _global_registry
+        from daemon.service import get_daemon
+        _global_registry = None
+        
         _daemon = get_daemon()
         await _daemon.start()
     return _daemon
@@ -125,20 +143,78 @@ async def execute_tool(request: ToolCallRequest) -> ToolCallResponse:
 
 
 @app.post("/discord/in", response_model=DiscordMessageResponse)
-async def receive_discord_message(request: DiscordMessageRequest) -> DiscordMessageResponse:
+async def receive_discord_message(request: Request) -> DiscordMessageResponse:
     """
     Receive and process a Discord message.
     
-    For now, this echoes back the message with a simple response.
-    Full LLM processing is handled by the orchestrator (SEM-85).
-    """
-    logger.info(f"Received Discord message from {request.author}: {request.content[:50]}...")
+    Accepts the envelope format from discord-gateway:
+    { type: 'discord_message', data: { channelId, messageId, author: { username }, content, timestamp, guildId, isDirectMessage } }
     
-    # Simple echo response for now
+    Wires to orchestrator ActionLoop for LLM processing.
+    """
+    # Parse the raw body to handle envelope format
+    body = await request.json()
+    logger.info(f"Received Discord envelope: type={body.get('type')}")
+    
+    # Extract message data from envelope
+    if body.get('type') == 'discord_message' and 'data' in body:
+        msg_data = body['data']
+        channel_id = msg_data.get('channelId', '')
+        message_id = msg_data.get('messageId', '')
+        author_username = msg_data.get('author', {}).get('username', 'unknown')
+        content = msg_data.get('content', '')
+        timestamp = msg_data.get('timestamp', '')
+        is_direct = msg_data.get('isDirectMessage', False)
+    else:
+        # Fallback: treat body as direct message
+        channel_id = body.get('channel_id', body.get('channelId', ''))
+        message_id = body.get('message_id', body.get('messageId', ''))
+        author_username = body.get('author', 'unknown')
+        content = body.get('content', '')
+        timestamp = body.get('timestamp', '')
+        is_direct = body.get('isDirectMessage', False)
+    
+    logger.info(f"Processing message from {author_username}: {content[:50]}...")
+    
+    # Run orchestrator in thread pool to avoid blocking
+    try:
+        result = await run_orchestrator(channel_id, content, {
+            'username': author_username,
+            'is_direct_message': is_direct,
+        })
+        response_text = result.response
+    except Exception as e:
+        logger.error(f"Orchestrator error: {e}")
+        response_text = f"Sorry, I encountered an error processing your request."
+    
     return DiscordMessageResponse(
-        content=f"Received: {request.content[:100]}",
-        reply_to_message_id=request.message_id,
+        content=response_text,
+        reply_to_message_id=message_id,
     )
+
+
+async def run_orchestrator(channel_id: str, message: str, user_info: dict) -> 'ActionResult':
+    """
+    Run the orchestrator action loop in an async context.
+    
+    Imports and creates ActionLoop inline to avoid circular imports
+    at module load time.
+    """
+    # Import here to avoid circular deps
+    from orchestrator.action_loop import ActionLoop, ActionResult
+    from memory_layer import MemoryStore
+    
+    loop = ActionLoop(memory_store=MemoryStore())
+    
+    # Run in executor to avoid blocking the event loop
+    # since ActionLoop.run() is async but the LLM call may block
+    result = await loop.run(
+        channel_id=channel_id,
+        user_message=message,
+        user_info=user_info,
+    )
+    
+    return result
 
 
 @app.exception_handler(HTTPException)

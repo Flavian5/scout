@@ -57,7 +57,7 @@ No events scheduled for today.
 |---------|--------|-------|
 | Discord | ✅ Active | Primary communication |
 | Linear MCP | ✅ Connected | Task management |
-| Notion MCP | ✅ Connected | Daily briefings, research |
+| Notion MCP | ✅ Connected | Life management hub (8 databases) |
 | Gmail API | {{GMAIL_STATUS}} | {{GMAIL_NOTES}} |
 | Google Calendar | {{CALENDAR_STATUS}} | {{CALENDAR_NOTES}} |
 

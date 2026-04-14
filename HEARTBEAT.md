@@ -2,6 +2,16 @@
 
 Quick checks to run periodically. Keep this small!
 
+## Daily Briefing Push
+
+At end of each heartbeat cycle, push summary to Notion Daily Briefing:
+
+```bash
+python skills/notion/notion.py create-briefing \
+  --email "X urgent emails" --calendar "X events" \
+  --tasks "Linear tickets updated" --priorities "Next focus areas"
+```
+
 ## Periodic Checks (2-4x daily)
 
 Priority order: P0 → P1 → P2 → P3
@@ -9,8 +19,11 @@ Priority order: P0 → P1 → P2 → P3
 - [ ] Check for urgent emails (`gog gmail search 'newer_than:1d is:unread' --max 20`)
 - [ ] Check calendar for upcoming events (`gog calendar events primary --from today --to tomorrow`)
 - [ ] Any new Linear notifications?
+- [ ] Push daily briefing to Notion
 
 **Note:** Heartbeat no longer checks job pipeline (scout/analyst/strategist deprecated and archived).
+
+**SEM-98:** Daily briefing push to Notion implemented - heartbeat now logs to daily-briefing DB.
 
 ## Scout Status (Last: 2026-04-12)
 

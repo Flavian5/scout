@@ -53,13 +53,15 @@ When responding on Discord: no markdown tables, use bullet lists for structured 
     def get_tool_definitions(self) -> list[dict]:
         """Convert registered tools to OpenAI function-calling format."""
         tools = []
-        for name, meta in self.tool_registry.list_tools().items():
+        for name in self.tool_registry.list_tools():
+            # Generate minimal tool definition with just the name
+            # TODO: Enhance by extracting docstrings/parameters from skill modules
             tool_def = {
                 "type": "function",
                 "function": {
                     "name": name,
-                    "description": meta.get("description", ""),
-                    "parameters": meta.get("parameters", {"type": "object", "properties": {}, "required": []}),
+                    "description": f"Tool: {name}",
+                    "parameters": {"type": "object", "properties": {}, "required": []},
                 },
             }
             tools.append(tool_def)

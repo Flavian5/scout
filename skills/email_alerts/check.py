@@ -37,7 +37,8 @@ def get_gog_emails(minutes=5):
             timeout=30
         )
         if result.returncode == 0 and result.stdout:
-            return json.loads(result.stdout)
+            data = json.loads(result.stdout)
+            return data.get("messages", [])
     except Exception as e:
         print(f"Error fetching emails: {e}")
     return []
@@ -110,7 +111,7 @@ def send_discord_notification(webhook_url, email, urgency_reason):
         return False
 
 
-def check_and_notify():
+def execute():
     """Main function to check emails and send notifications."""
     config = load_config()
     webhook_url = config.get("discord_webhook")
@@ -141,4 +142,4 @@ def check_and_notify():
 
 
 if __name__ == "__main__":
-    check_and_notify()
+    execute()

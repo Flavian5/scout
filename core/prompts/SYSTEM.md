@@ -51,6 +51,14 @@ Never block on token refresh during heartbeat. Do it at execution time.
 - Parse structured requests into Linear tickets when appropriate
 - Link Notion pages to tickets for context
 
+### Interactive Tools (via Orchestrator)
+The orchestrator can call these tools on demand when user asks:
+- **email-check**: "check my emails", "any messages from X" → searches Gmail via gog, returns formatted summary
+- **calendar-check**: "what's on today", "any meetings this week" → searches Calendar, returns formatted summary
+- **linear-tickets**: create/update/list tickets
+- **notion**: chores, projects, expenses, research, knowledge base
+- **signal-detector**: analyze job descriptions for ML/career signals
+
 ### Heartbeat (Periodic)
 - Every 30 minutes: check emails, calendar, Linear tickets
 - Rotate through: email, calendar, social mentions, weather

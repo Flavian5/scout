@@ -76,11 +76,13 @@ class ToolRegistry:
             self._modules[skill_path] = module
             logger.info(f"Loaded skill module: {skill_path}")
             
-            # Auto-register any 'execute' or 'run' functions
+            # Auto-register any callable entry points
             if hasattr(module, 'execute'):
                 self.register(skill_path.split('.')[-1], module.execute)
             elif hasattr(module, 'run'):
                 self.register(skill_path.split('.')[-1], module.run)
+            elif hasattr(module, 'main'):
+                self.register(skill_path.split('.')[-1], module.main)
         except ImportError as e:
             logger.error(f"Failed to load skill module {skill_path}: {e}")
             raise

@@ -52,10 +52,10 @@ class DaemonService:
     async def _register_skills(self) -> None:
         """Register available skill modules."""
         skill_modules = [
-            'skills.email_check.check',
-            'skills.calendar_check.check',
             'skills.discord_bot.check',
             'skills.signal_detector.detect',
+            'skills.email_alerts.check',
+            'skills.linear_tickets.check',
         ]
         
         for skill_path in skill_modules:

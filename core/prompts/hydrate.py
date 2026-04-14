@@ -233,6 +233,11 @@ def get_relevant_skills(request):
         "search": ["firecrawl-mcp"],
         "job": ["signal-detector", "firecrawl-mcp"],
         "research": ["firecrawl-mcp", "gog", "notion"],
+        "chores": ["notion"],
+        "financials": ["notion"],
+        "budget": ["notion"],
+        "projects": ["notion"],
+        "weekend": ["notion"],
     }
     
     relevant = set()

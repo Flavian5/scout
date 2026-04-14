@@ -42,6 +42,21 @@
       },
       "calendar-confirm": {
         "enabled": true
+      },
+      "notion": {
+        "enabled": true,
+        "config": {
+          "databases": [
+            "chores",
+            "financials",
+            "projects",
+            "weekend-plans",
+            "daily-briefing",
+            "research",
+            "knowledge-base",
+            "deliverables"
+          ]
+        }
       }
     }
   },
