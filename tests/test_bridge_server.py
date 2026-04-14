@@ -5,10 +5,23 @@ Tests the HTTP API endpoints without requiring actual daemon startup.
 """
 
 import pytest
+
+# Skip entire file if FastAPI not available (daemon dependency)
+try:
+    from fastapi.testclient import TestClient
+    FASTEMI_AVAILABLE = True
+except ImportError:
+    FASTEMI_AVAILABLE = False
+
 from unittest.mock import MagicMock, patch, AsyncMock
 from datetime import datetime
-from fastapi.testclient import TestClient
 
+
+# Skip entire file if FastAPI not available
+pytestmark = pytest.mark.skipif(
+    not FASTEMI_AVAILABLE,
+    reason="FastAPI not installed - daemon dependency not available"
+)
 
 # =============================================================================
 # Test Bridge Server Endpoints
@@ -153,6 +166,8 @@ class TestBridgeWithClient:
     
     def test_client_import(self):
         """Test we can import the app."""
+        if not FASTEMI_AVAILABLE:
+            pytest.skip("FastAPI not available - daemon dependency not installed")
         try:
             from bridge.server import app
             assert app is not None
