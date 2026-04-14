@@ -8,23 +8,31 @@ If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out w
 
 ## CRITICAL: No Inline Code Execution
 
-**DO NOT USE INLINE CODE IN COMMANDS!**
+**⚠️ NEVER USE INLINE SCRIPTS WITH LINEBREAKS IN COMMANDS!**
 
 When executing any command, ALWAYS:
-1. Write a temporary script file first
-2. Execute the script
-3. Delete the script after execution
+1. Write a temporary script file first (`write_to_file`)
+2. Execute the script (`execute_command`)
+3. Delete the script after execution (`execute_command` → `rm`)
 
-This applies to EVERYTHING - one-liners, tests, quick commands, etc.
+**🚫 NEVER do any of these:**
+- `cat << 'EOF' > script.py` then paste content inline
+- `python3 -c "print('hello')"`
+- `cd /path && command`
+- Any command containing multi-line scripts or pipe'd content
 
-Example CORRECT approach:
-1. `write_to_file` → `temp_script.py`
+**Why linebreaks break things:**
+- Shell parsing mangles newlines and special characters
+- CAT heredocs still execute inline — linebreaks get corrupted
+- Escape sequences get corrupted mid-transmission
+- Debugging these failures is nearly impossible
+
+**✅ CORRECT approach:**
+1. `write_to_file` → `temp_script.py` (complete file content)
 2. `execute_command` → `python3 temp_script.py`
 3. `execute_command` → `rm temp_script.py`
 
-Example WRONG approach (never do this):
-- `execute_command` → `python3 -c "print('hello')"`
-- `execute_command` → `cd /path && ls -la`
+This applies to EVERYTHING - one-liners, tests, quick commands, complex scripts, CAT/heredocs, etc.
 
 ## Every Session
 

@@ -2,7 +2,26 @@
 
 ## Script Execution
 
-**Critical Rule:** When running scripts, always write to a file first (e.g. `skills/*/check.py`), then execute via `python3 skills/*/check.py`. Never embed multi-line Python scripts inline in `execute_command — escaped quotes and special characters cause failures.
+**⚠️ CRITICAL: NEVER Use Inline Scripts with Multi-line Code!**
+
+When running scripts, always write to a file first (e.g. `skills/*/check.py`), then execute via `python3 skills/*/check.py`. 
+
+**NEVER do this:**
+- ❌ `execute_command` → `cat << 'EOF' > script.py` then paste multi-line content
+- ❌ `execute_command` → `python3 -c "print('hello')"`  
+- ❌ `execute_command` → `cd /path && ls -la`
+- ❌ Any inline multi-line script with linebreaks in the command itself
+
+**Why linebreaks in commands break things:**
+- Shell parsing mangles newlines and special characters
+- Escape sequences get corrupted
+- CAT heredocs still execute inline — linebreaks still get mangled
+- Debugging inline failures is nearly impossible
+
+**CORRECT approach:**
+1. `write_to_file` → `temp_script.py` (complete file content)
+2. `execute_command` → `python3 temp_script.py`
+3. `execute_command` → `rm temp_script.py` (cleanup after)
 
 ### Why
 - Inline scripts require escaping of quotes, newlines, and special characters
