@@ -51,19 +51,19 @@ def load_discord_webhook():
 
 @pytest.fixture
 def gog_available():
-    """Check if gog is installed and authenticated."""
+    """Check if gog is installed (don't require all APIs to be enabled)."""
     try:
         result = subprocess.run(
-            ["gog", "whoami"],
+            ["gog", "--version"],
             capture_output=True,
             text=True,
             timeout=10
         )
         if result.returncode != 0:
-            pytest.skip("gog not authenticated - run: gog login <email>")
+            pytest.skip("gog not installed - run: brew install steipete/tap/gogcli")
         return True
     except (subprocess.TimeoutExpired, FileNotFoundError):
-        pytest.skip("gog not installed or not configured")
+        pytest.skip("gog not installed - run: brew install steipete/tap/gogcli")
 
 
 class TestGogGmail:
@@ -201,8 +201,12 @@ class TestGogAuth:
     """Test gog authentication status."""
 
     def test_gog_whoami(self, gog_available):
-        """Test gog identity."""
+        """Test gog identity (may fail if People API not enabled)."""
         result = subprocess.run(["gog", "whoami"], capture_output=True, text=True)
+        
+        # People API may not be enabled - skip gracefully
+        if "People API" in result.stderr and "403" in result.stderr:
+            pytest.skip("People API not enabled - run: gog login <email>")
         
         assert result.returncode == 0
         # Should show authenticated email
