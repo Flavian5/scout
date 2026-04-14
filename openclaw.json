@@ -23,9 +23,6 @@
   },
   "skills": {
     "entries": {
-      "email-check": {
-        "enabled": true
-      },
       "signal-detector": {
         "enabled": true,
         "config": {
@@ -34,14 +31,8 @@
           "endpoint": "https://api.minimax.io/v1/text/chatcompletion_v2"
         }
       },
-      "ddg-web-search": {
+      "gog": {
         "enabled": true
-      },
-      "openclaw-tavily-search": {
-        "enabled": true,
-        "config": {
-          "api_key": "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"
-        }
       },
       "discord-bot": {
         "enabled": true

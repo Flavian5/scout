@@ -4,20 +4,18 @@ _Centralized manifest of available skills. Load relevant skill documentation bef
 
 ## Active Skills
 
-### email-check
-**Purpose**: Check Gmail inbox for unread messages, classify urgency
-**Trigger**: `--fetch`, `--classify`, `--urgent-alert`
-**Auth**: OAuth2 at `config/gmail-token.json`
-**Scope**: `gmail.modify` (required for drafts)
-**Output**: Array of emails with sender, subject, snippet, timestamp, urgency classification
-**Priority Labels**: urgent | important | routine
-
-### calendar-check
-**Purpose**: Check Google Calendar for upcoming events, send 15-min reminders
-**Trigger**: `--fetch`, `--remind`, `--digest`
-**Auth**: OAuth2 at `config/calendar-token.json`
-**Output**: Array of events with title, start, end, location, attendees, minutes_until
-**Reminder Window**: 15 minutes before event
+### linear-tickets
+**Purpose**: Create, update, and manage Linear tickets
+**Trigger**: `check`, `mark-done`, `update`, `create`
+**Auth**: `LINEAR_API_KEY` in `.env`
+**Done State ID**: `39e1f571-b346-48db-9814-d18351bbedfd`
+**Team ID**: `791b6072-2693-4b7d-bb59-873cc116795a`
+**Critical**: ALWAYS use this script for ticket operations, NOT Linear MCP directly!
+**Commands**:
+- `python skills/linear-tickets/check.py check` - Check ticket statuses
+- `python skills/linear-tickets/check.py mark-done` - Mark tickets as Done
+- `python skills/linear-tickets/check.py update --id TICKET_ID --state STATE_ID` - Update specific ticket
+- `python skills/linear-tickets/check.py create --title "TITLE" --description "DESC" --priority N` - Create ticket
 
 ### discord-bot
 **Purpose**: Parse Discord requests → Linear tickets, link Notion pages to tickets
@@ -38,27 +36,30 @@ _Centralized manifest of available skills. Load relevant skill documentation bef
 **Output**: Signal strength scores (ML architecture, domain alignment, career impact, infrastructure, culture)
 **Categories**: ml_architecture (25%), domain_alignment (25%), career_impact (20%), infrastructure (15%), culture (10%)
 
-### ddg-web-search
-**Purpose**: Web search via DuckDuckGo Lite
-**Trigger**: Search for current information
-**Auth**: None required
+### gog
+**Purpose**: Google Workspace CLI for Gmail, Calendar, Drive, Contacts, Sheets, Docs
+**Trigger**: Email, calendar, drive, docs, sheets operations
+**Auth**: OAuth2 via `gog auth add`
+**Install**: `brew install steipete/tap/gogcli`
+**Commands**: `gog gmail search`, `gog calendar events`, `gog drive search`, etc.
 
-### openclaw-tavily-search
-**Purpose**: Enhanced web search via Tavily AI
-**Trigger**: Deep research search
-**Auth**: `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`
+### firecrawl-mcp
+**Purpose**: Web search and scraping via Firecrawl MCP (already running)
+**Trigger**: Deep web research, page content extraction
+**Note**: Use MCP tool directly, not a Python script
 
 ## Skill Selection Guide
 
 | Request Type | Primary Skill | Secondary |
 |--------------|---------------|-----------|
-| Check emails | email-check | notion (store digest) |
-| Check calendar | calendar-check | discord-bot (reminders) |
-| Create ticket | discord-bot | - |
+| Check emails | gog | notion (store digest) |
+| Check calendar | gog | discord-bot (reminders) |
+| Check/update tickets | linear-tickets | - |
+| Create ticket | discord-bot | linear-tickets |
 | Link Notion | discord-bot | notion |
-| Job analysis | signal-detector | ddg-web-search |
-| Web search | ddg-web-search | openclaw-tavily-search |
-| Daily briefing | notion | email-check, calendar-check |
+| Job analysis | signal-detector | firecrawl-mcp |
+| Web search | firecrawl-mcp | gog (Google results) |
+| Daily briefing | notion | gog (email + calendar) |
 
 ## Execution Notes
 

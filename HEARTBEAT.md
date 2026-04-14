@@ -6,8 +6,8 @@ Quick checks to run periodically. Keep this small!
 
 Priority order: P0 → P1 → P2 → P3
 
-- [ ] Check for urgent emails (`python skills/email-check/check.py --fetch --classify`)
-- [ ] Check calendar for upcoming events (`python skills/calendar-check/check.py --fetch --remind`)
+- [ ] Check for urgent emails (`gog gmail search 'newer_than:1d is:unread' --max 20`)
+- [ ] Check calendar for upcoming events (`gog calendar events primary --from now --to +24h`)
 - [ ] Any new Linear notifications?
 
 **Note:** Heartbeat no longer checks job pipeline (scout/analyst/strategist deprecated and archived).

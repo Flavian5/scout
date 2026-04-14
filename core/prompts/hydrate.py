@@ -226,13 +226,13 @@ def get_relevant_skills(request):
     request_lower = request.lower() if request else ""
     
     skill_map = {
-        "email": ["email-check", "notion"],
-        "calendar": ["calendar-check", "discord-bot"],
+        "email": ["gog", "notion"],
+        "calendar": ["gog", "discord-bot"],
         "ticket": ["discord-bot", "linear-tickets"],
         "notion": ["notion"],
-        "search": ["ddg-web-search", "openclaw-tavily-search"],
-        "job": ["signal-detector", "ddg-web-search"],
-        "research": ["ddg-web-search", "openclaw-tavily-search", "notion"],
+        "search": ["firecrawl-mcp"],
+        "job": ["signal-detector", "firecrawl-mcp"],
+        "research": ["firecrawl-mcp", "gog", "notion"],
     }
     
     relevant = set()
@@ -240,7 +240,7 @@ def get_relevant_skills(request):
         if keyword in request_lower:
             relevant.update(skills)
     
-    return list(relevant) if relevant else ["ddg-web-search"]  # default
+    return list(relevant) if relevant else ["firecrawl-mcp"]  # default
 
 
 def rotate_logs():
