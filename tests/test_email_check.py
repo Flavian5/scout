@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
-EMAIL_CHECK_PATH = PROJECT_ROOT / "skills" / "email-check" / "check.py"
+EMAIL_CHECK_PATH = PROJECT_ROOT / "skills" / "email-alerts" / "check.py"
 
 # Mock google imports before loading the module
 sys.modules['google'] = MagicMock()

@@ -36,6 +36,12 @@
       },
       "discord-bot": {
         "enabled": true
+      },
+      "email-alerts": {
+        "enabled": true
+      },
+      "calendar-confirm": {
+        "enabled": true
       }
     }
   },
