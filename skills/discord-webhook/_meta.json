@@ -1,0 +1,6 @@
+{
+  "name": "discord-webhook",
+  "version": "1.0.0",
+  "description": "Webhook endpoint to receive Discord messages from gateway",
+  "entry": "server.py"
+}

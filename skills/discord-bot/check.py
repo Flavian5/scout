@@ -197,8 +197,9 @@ def create_linear_ticket(title, description, priority=2, labels=None):
         }
     }
     
-    if label_names:
-        variables["input"]["labelNames"] = label_names
+    # Note: Linear API expects labelIds (UUIDs), not labelNames
+    # Labels would need to be looked up first to get their IDs
+    # For now, create tickets without labels
     
     data = run_query(query, variables)
     if data and data.get("issueCreate", {}).get("success"):
@@ -213,10 +214,31 @@ def create_linear_ticket(title, description, priority=2, labels=None):
     return {"success": False}
 
 
-def send_discord_confirmation(ticket, webhook_url):
-    """Send ticket creation confirmation to Discord"""
-    import requests
+def send_discord_confirmation(ticket, channel_id):
+    """Send ticket creation confirmation to Discord via MCP
     
+    NOTE: This function is deprecated. Use MCP tool 'discord_send' instead:
+    
+    MCP Tool: discord_send
+    Args: {
+      "channelId": "<channel_id>",
+      "message": f"📋 Created Linear ticket **{ticket['identifier']}**\n{ticket.get('url', '')}"
+    }
+    
+    This implementation kept for backwards compatibility with existing scripts.
+    """
+    # MCP approach (recommended):
+    # Use discord_send MCP tool with message:
+    # f"📋 Created Linear ticket **{ticket['identifier']}**\n{ticket.get('url', '')}"
+    
+    # Legacy webhook approach:
+    config = load_config()
+    webhook_url = config.get("discord_webhook")
+    if not webhook_url:
+        print("[MCP] Use discord_send with:", f"📋 Created Linear ticket **{ticket['identifier']}**")
+        return True
+    
+    import requests
     embed = {
         "title": f"✅ Ticket Created: {ticket['identifier']}",
         "description": ticket.get("title", "New Ticket"),
@@ -373,10 +395,13 @@ def cmd_parse(args):
             print(f"✅ Created: {result['identifier']}")
             print(f"   URL: {result['url']}")
             
-            # Send Discord confirmation
-            webhook = load_config().get("discord_webhook")
-            if webhook:
-                send_discord_confirmation(result, webhook)
+            # Send Discord confirmation via MCP
+            # MCP Tool: discord_send
+            # channel_id from config.discord.channel_id
+            # message: f"📋 Created Linear ticket **{result['identifier']}**\n{result['url']}"
+            channel_id = load_config().get("discord", {}).get("channel_id")
+            if channel_id:
+                send_discord_confirmation(result, channel_id)
         else:
             print("❌ Failed to create ticket")
             return 1

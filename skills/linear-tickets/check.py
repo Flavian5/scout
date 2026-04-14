@@ -188,6 +188,35 @@ EPIC_GROUPS = {
 }
 
 
+def create_issue(title, description, priority=0):
+    """Create a Linear issue"""
+    mutation = """
+    mutation CreateIssue($input: IssueCreateInput!) {
+        issueCreate(input: $input) {
+            success
+            issue {
+                identifier
+                title
+            }
+        }
+    }
+    """
+    variables = {
+        "input": {
+            "teamId": TEAM_ID,
+            "title": title,
+            "description": description,
+            "priority": priority
+        }
+    }
+    data = run_query(mutation, variables)
+    if data and data.get("issueCreate", {}).get("success"):
+        issue = data["issueCreate"]["issue"]
+        print(f"  ✓ Created {issue['identifier']}: {issue['title']}")
+        return issue
+    return None
+
+
 # =============================================================================
 # Commands
 # =============================================================================
@@ -213,6 +242,23 @@ def cmd_check(args):
     
     print("=== Check Complete ===")
     return 0
+
+
+def cmd_create(args):
+    """Create tickets"""
+    if not args.title:
+        print("ERROR: --title required")
+        return 1
+    
+    print(f"\n=== Creating ticket ===")
+    issue = create_issue(args.title, args.description or "", args.priority or 0)
+    
+    if issue:
+        print(f"✓ Created successfully")
+        return 0
+    else:
+        print(f"✗ Creation failed")
+        return 1
 
 
 def cmd_mark_done(args):
@@ -296,6 +342,12 @@ def main():
     update_parser.add_argument("--title", help="New title")
     update_parser.add_argument("--description", help="New description")
     
+    # Create command
+    create_parser = subparsers.add_parser("create", help="Create a ticket")
+    create_parser.add_argument("--title", required=True, help="Ticket title")
+    create_parser.add_argument("--description", help="Ticket description")
+    create_parser.add_argument("--priority", type=int, default=0, help="Priority (0=P0, 1=P1, etc)")
+    
     args = parser.parse_args()
     
     if args.command == "check":
@@ -304,6 +356,8 @@ def main():
         return cmd_mark_done(args)
     elif args.command == "update":
         return cmd_update(args)
+    elif args.command == "create":
+        return cmd_create(args)
     else:
         parser.print_help()
         return 0

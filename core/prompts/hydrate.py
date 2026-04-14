@@ -14,13 +14,17 @@ Usage:
 
 import argparse
 import json
-from datetime import datetime
+import uuid
+import time
+from datetime import datetime, timedelta
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 PROMPTS_DIR = PROJECT_ROOT / "core" / "prompts"
 CONFIG_DIR = PROJECT_ROOT / "config"
 SECRETS_PATH = CONFIG_DIR / "secrets.json"
+LOGS_DIR = PROJECT_ROOT / "logs"
+MAX_LOG_AGE_DAYS = 7
 
 
 def load_json(path):
@@ -237,6 +241,93 @@ def get_relevant_skills(request):
             relevant.update(skills)
     
     return list(relevant) if relevant else ["ddg-web-search"]  # default
+
+
+def rotate_logs():
+    """Remove log files older than MAX_LOG_AGE_DAYS."""
+    if not LOGS_DIR.exists():
+        return
+    
+    cutoff = datetime.now() - timedelta(days=MAX_LOG_AGE_DAYS)
+    for log_file in LOGS_DIR.glob("*.jsonl"):
+        if log_file.stat().st_mtime < cutoff.timestamp():
+            log_file.unlink()
+            print(f"Rotated old log: {log_file.name}")
+
+
+def log_trace(
+    mode: str,
+    request_preview: str,
+    context_snapshot: dict,
+    llm_info: dict = None,
+    tool_calls: list = None,
+    response_preview: str = None,
+    reasoning: str = None,
+) -> str:
+    """
+    Log an agent trace entry to logs/agent-trace.jsonl.
+    
+    Args:
+        mode: "discord" or "heartbeat"
+        request_preview: Truncated request text
+        context_snapshot: Dict with time, unread_emails, etc.
+        llm_info: Dict with model, prompt_tokens, completion_tokens, latency_ms
+        tool_calls: List of tool call dicts with tool, args, result, latency_ms
+        response_preview: Truncated response text
+        reasoning: LLM reasoning/chain-of-thought if captured
+    
+    Returns:
+        trace_id: UUID for this trace entry
+    """
+    # Ensure logs directory exists
+    LOGS_DIR.mkdir(parents=True, exist_ok=True)
+    
+    # Rotate old logs
+    rotate_logs()
+    
+    # Create trace entry
+    trace_id = str(uuid.uuid4())[:8]
+    entry = {
+        "timestamp": datetime.now().isoformat() + "Z",
+        "trace_id": trace_id,
+        "mode": mode,
+        "request_preview": request_preview[:100] if request_preview else "",
+        "context_snapshot": context_snapshot,
+        "llm": llm_info or {},
+        "tool_calls": tool_calls or [],
+        "response_preview": response_preview[:200] if response_preview else "",
+        "reasoning": reasoning,
+    }
+    
+    # Append to log file
+    log_file = LOGS_DIR / "agent-trace.jsonl"
+    with open(log_file, "a") as f:
+        f.write(json.dumps(entry) + "\n")
+    
+    return trace_id
+
+
+def log_tool_call(
+    trace_id: str,
+    tool: str,
+    args: dict,
+    result: dict,
+    latency_ms: float,
+    reasoning: str = None,
+) -> dict:
+    """
+    Log a single tool call within an existing trace.
+    
+    Returns a dict suitable for adding to tool_calls list in log_trace().
+    """
+    return {
+        "trace_id": trace_id,
+        "tool": tool,
+        "args": args,
+        "result": result,
+        "latency_ms": round(latency_ms, 2),
+        "reasoning": reasoning,
+    }
 
 
 def main():

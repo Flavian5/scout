@@ -1,0 +1,6 @@
+{
+    "name": "tool-registry",
+    "description": "Core daemon with in-process tool registry for Discord bot",
+    "version": "1.0.0",
+    "skill": "SEM-82"
+}

@@ -40,8 +40,11 @@
       "openclaw-tavily-search": {
         "enabled": true,
         "config": {
-          "api_key": "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"
+          "api_key": "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"
         }
+      },
+      "discord-bot": {
+        "enabled": true
       }
     }
   },

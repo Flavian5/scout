@@ -6,6 +6,26 @@ This folder is home. Treat it that way.
 
 If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out who you are, then delete it. You won't need it again.
 
+## CRITICAL: No Inline Code Execution
+
+**DO NOT USE INLINE CODE IN COMMANDS!**
+
+When executing any command, ALWAYS:
+1. Write a temporary script file first
+2. Execute the script
+3. Delete the script after execution
+
+This applies to EVERYTHING - one-liners, tests, quick commands, etc.
+
+Example CORRECT approach:
+1. `write_to_file` → `temp_script.py`
+2. `execute_command` → `python3 temp_script.py`
+3. `execute_command` → `rm temp_script.py`
+
+Example WRONG approach (never do this):
+- `execute_command` → `python3 -c "print('hello')"`
+- `execute_command` → `cd /path && ls -la`
+
 ## Every Session
 
 Before doing anything else:
