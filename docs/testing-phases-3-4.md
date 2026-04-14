@@ -1,8 +1,8 @@
-# Testing Phases 3 & 4
+# Testing Guide
 
-## Phase 3: Manual Discord Testing (User - You)
+## Manual Discord Testing
 
-These are real-world scenarios to test by interacting with the bot on Discord:
+Real-world scenarios to test by interacting with the bot on Discord:
 
 | # | Use Case | Steps | Expected Result |
 |---|----------|-------|----------------|
@@ -17,37 +17,26 @@ These are real-world scenarios to test by interacting with the bot on Discord:
 | 9 | Error Handling | Send invalid command | Bot responds gracefully, no crash |
 | 10 | Quiet Hours | Send message during 23:00-08:00 | Bot responds but doesn't send proactive notifications |
 
-## Phase 4: Smoke Tests (Quick Health Checks)
-
-Run these after any deployment or major change:
+## Smoke Tests (Quick Health Checks)
 
 ```bash
-# 1. Bridge server health
-curl http://localhost:8080/health
-
-# 2. Discord gateway health
-curl http://localhost:3456/health
-
-# 3. Discord webhook health
-curl http://localhost:3001/health
-
-# 4. gog CLI
+# 1. gog CLI (Gmail access)
 gog gmail search 'newer_than:1d is:unread' --max 1
 gog calendar events primary --from today --to tomorrow
 
-# 5. All unit tests
+# 2. OpenClaw logs
+tail -f logs/openclaw.log
+
+# 3. All unit tests
 pytest tests/ -v
 
-# 6. Context hydrator
+# 4. Context hydrator
 python core/prompts/hydrate.py --request "check my emails"
 ```
 
-## Implementation Order (Reference)
+### Discord Commands Test
 
-1. Bridge server tests — Highest value, covers transport layer
-2. Discord bot tests — Core user-facing functionality
-3. Hydrator tests — Critical for prompt assembly
-4. Signal detector tests — Simple, high coverage potential
-5. Tool registry tests — Validates skill discovery
-6. Live integration tests — Run only when APIs configured
-7. Manual Discord testing — Real-world validation
+```bash
+# Test hook dispatcher directly
+python scripts/hook_dispatcher.py email
+python scripts/hook_dispatcher.py calendar

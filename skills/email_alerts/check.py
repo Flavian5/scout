@@ -112,25 +112,39 @@ def send_discord_notification(webhook_url, email, urgency_reason):
 
 
 def execute():
-    """Main function to check emails and send notifications."""
+    """Main function to check emails and send notifications.
+    
+    Returns:
+        dict: Result with keys:
+            - success: bool
+            - messages: list of urgent email dicts (if any)
+            - checked_count: int
+            - notified_count: int
+    """
     config = load_config()
     webhook_url = config.get("discord_webhook")
     
     if not webhook_url:
         print("No discord_webhook configured in secrets.json")
-        return
+        return {"success": True, "messages": [], "checked_count": 0, "notified_count": 0}
     
     # Fetch recent unread emails (last 30 minutes to catch any we might have missed)
     emails = get_gog_emails(minutes=30)
     
     if not emails:
         print("No unread emails found")
-        return
+        return {"success": True, "messages": [], "checked_count": 0, "notified_count": 0}
     
+    urgent_emails = []
     notified_count = 0
     for email in emails:
         is_urgent, reason = is_urgent_email(email, config)
         if is_urgent:
+            urgent_emails.append({
+                "from": email.get("from", "Unknown"),
+                "subject": email.get("subject", "(no subject)"),
+                "reason": reason
+            })
             success = send_discord_notification(webhook_url, email, reason)
             if success:
                 print(f"✅ Notified: {email.get('subject', '')[:50]} - {reason}")
@@ -139,6 +153,13 @@ def execute():
                 print(f"❌ Failed: {email.get('subject', '')[:50]}")
     
     print(f"Checked {len(emails)} emails, {notified_count} urgent notifications sent")
+    
+    return {
+        "success": True,
+        "messages": urgent_emails,
+        "checked_count": len(emails),
+        "notified_count": notified_count
+    }
 
 
 if __name__ == "__main__":
