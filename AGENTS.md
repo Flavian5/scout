@@ -34,6 +34,25 @@ When executing any command, ALWAYS:
 
 This applies to EVERYTHING - one-liners, tests, quick commands, complex scripts, CAT/heredocs, etc.
 
+## Testing Rules
+
+**🚫 NO pytest.skip() ALLOWED - Tests must never be skipped!**
+
+- If a test fails, FIX IT - don't skip it
+- If a test doesn't apply to our architecture, DELETE IT - don't skip it
+- If a dependency is missing, INSTALL IT or rewrite the test - don't skip it
+- Skipped tests are worthless - they give false confidence
+
+**Why skips are forbidden:**
+- Skips mask real failures
+- Skips accumulate over time until no tests actually run
+- A skipped test is a TODO that never gets done
+
+**Correct approach:**
+- Tests either pass (100%) or get deleted/fixed
+- Integration tests should test what's actually used (gog CLI for Gmail/Calendar)
+- No test that doesn't apply should remain in codebase
+
 ## Every Session
 
 Before doing anything else:
